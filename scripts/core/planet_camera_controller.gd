@@ -43,7 +43,7 @@ func _process(delta : float) -> void:
 	_update_camera()
 
 
-func _unhandled_input(event : InputEvent) -> void:
+func _input(event : InputEvent) -> void:
 	var mb := event as InputEventMouseButton
 	if mb != null and mb.pressed:
 		if mb.button_index == MOUSE_BUTTON_WHEEL_UP:
