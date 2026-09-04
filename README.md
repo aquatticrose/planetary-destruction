@@ -23,7 +23,8 @@ A small, AI-assisted Godot planetary sandbox prototype.
 - **Phase 3 (First Destructive Interaction)** — done: minimal interaction modes (Orbit/Targeting/Firing), fake projectile, impact crater + particle burst, impact position recorded, and randomized shoot/impact sound banks.
 - **Phase 4 (Planet Damage System)** — done: persistent damage map + crater shader (darkened craters, ember rim, crack wrinkle displacement), `ImpactData` resource, planet damage stages (Healthy → Damaged → Cracked → Critical), and a live damage readout in the overlay.
 - **Interaction revision** — two aim modes: **CROSSHAIR (default)** with a screen-centre crosshair (WASD/arrows orbit the camera to aim) and **TARGETING (T)** restoring click-to-target; Space fires in both, projectiles always impact at the **first surface intersection** (no tunneling), pooled sound banks so rapid shots/impacts overlap.
-- Gravity, real destruction, data-driven planets: planned (Phase 5+).
+- **Phase 5 (Data-Driven Planets)** — done: `PlanetData`/`PlanetVisualSettings` resources, five live-switchable presets (Terra, Luna, Vulcanis, Glacia, Titanus) on **keys 1–5**, preset-driven size/visuals/camera limits, planet readout in the overlay.
+- Gravity, orbital simulation, real mesh destruction: planned (Phase 6+).
 
 ## Input / Controls
 
@@ -34,6 +35,7 @@ A small, AI-assisted Godot planetary sandbox prototype.
 | `camera_zoom_in/out` | Mouse wheel |
 | `fire` | Space |
 | `toggle_aim_mode` | T |
+| `preset_1..preset_5` | Number keys 1–5 (planet presets) |
 | `cancel` (`ui_cancel`) | Esc |
 
 **CROSSHAIR mode (default):** a real crosshair is fixed at the screen centre; orbit the camera (WASD/arrows) so the crosshair covers the point you want to hit, then **Space** fires along the view direction. **TARGETING mode (T):** LMB places the target marker on the planet, WASD slides it (camera-relative), Space fires at it. **Esc** resets the aim and returns to CROSSHAIR.
@@ -45,7 +47,7 @@ assets/     re-usable art, models, textures, materials, audio, fonts
 scenes/     main, planet, celestial, effects, ui
 scripts/    core, simulation, planet, celestial, impacts, ui, debug
 shaders/    shader code
-data/       data-driven definitions (Resources)
+data/       data-driven definitions (Resources); planet presets in data/planets/
 tests/      automated tests
 docs/       technical documentation
 ```

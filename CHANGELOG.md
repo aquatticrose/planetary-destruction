@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.1.0] — Phase 5: Data-Driven Planets
+
+### Added
+- `PlanetData` resource (`data/planet_data.gd`): display name, radius, mass, gravity, rotation speed, temperature, atmosphere density, surface type, composition, generation seed and visual settings. Physics fields (mass/gravity/rotation) are **data only** for now — later phases consume them.
+- `PlanetVisualSettings` resource (`data/planet_visual_settings.gd`): base colour, roughness, ember colour/strength, wrinkle strength, atmosphere colour (reserved).
+- **Five planet presets** (`data/planets/*.tres`): **Terra** (Earth-like), **Luna** (barren moon), **Vulcanis** (volcanic), **Glacia** (icy), **Titanus** (gas giant) — selectable at runtime, no gameplay code duplicated.
+- `Planet.apply_data()`: applies a preset to the surface mesh, collider and damage-shader visuals; mesh/shape resources are duplicated per instance so presets can never leak between planets.
+- `PlanetDamage.apply_visuals()`: pushes preset visuals into the cached crater material (cached material survives impacts).
+- Crater shader now exposes `base_color`, `roughness`, `ember_color`, `ember_strength` uniforms (defaults keep the Phase 4 warm-rock look).
+- `PlanetSelector` (`scripts/core/planet_selector.gd`): **keys 1–5** swap the planet preset live (`preset_1..preset_5` input actions); starts on Terra (preset 1).
+- Overlay shows a live "Planet: <name> (n/5)" readout; camera zoom limits re-derive from the active radius every frame, so big/small presets re-clamp the camera instantly.
+
+### Changed
+- `project.godot`: added `preset_1..preset_5` inputs (number keys 1–5).
+
 ## [0.0.5] — Phase 4: Planet Damage System
 
 ### Changed (interaction revision)
