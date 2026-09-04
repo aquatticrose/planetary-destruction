@@ -2,6 +2,16 @@
 
 ## [0.0.5] — Phase 4: Planet Damage System
 
+### Changed (interaction revision)
+- Controls reworked: **WASD continuously aims a crosshair** over the planet surface (camera-relative), **Space fires** along the current aim, **Esc** resets the aim. Click-to-target and the F fire-mode toggle are gone; the orbit camera moves to the arrow keys, zoom is unchanged.
+- New `AimController` (`scripts/core/aim_controller.gd`, replaces the Phase 2 Selector): keeps a persistent local aim direction on the planet, slides it camera-relative each frame, and exposes the world-space aim point; guards against an unpositioned camera (deferred reset + zero-direction fallback).
+- Projectiles pre-compute the **first surface intersection** along the shot direction (camera raycast at fire time) and impact exactly there — they can no longer tunnel through the planet toward a far-side target. `ImpactData` uses that actual hit position/normal, so the `ImpactData → PlanetDamage` pipeline is preserved.
+- `SoundBank` now owns a small **pool of `AudioStreamPlayer`s** (4 per bank): rapid shots/impacts overlap naturally instead of cutting each other off; free players are reused and, when all are busy, the most-finished one is stolen. Random variation and no-immediate-repeat behaviour are unchanged, and the bank stays reusable for future weapons.
+- `Main.tscn` wires two configured banks: `ShootBank` (shoot1/shoot2) and `ImpactBank` (impact / heavy-impact / deep-heavy-impact).
+
+### Removed
+- Click-to-target selector (`scripts/core/targeting.gd`) and the `toggle_fire_mode` (F) input action — replaced by continuous WASD aiming + Space firing.
+
 ### Added
 - `ImpactData` resource (`data/impact_data.gd`): strength, radius, world/local position and surface normal of a single impact.
 - Persistent `DamageMap` (`scripts/planet/damage_map.gd`): a per-planet bitmap (Image → ImageTexture) painted with procedural `FastNoiseLite` dapples, so repeated hits build up organic craters instead of perfect circles.
