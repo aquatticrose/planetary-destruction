@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased] — Phase 6: Celestial Bodies
+
+### Added
+- `CelestialBody` base class (`scripts/celestial/celestial_body.gd`): the reusable identity for every celestial object — planets, moons, stars, asteroids and fragments. Owns a typed `BodyType` enum, `mass`, `radius`, `velocity` and `angular_velocity` (self-rotation, applied per frame), plus a spawn/despawn lifecycle: bodies auto-register with the `SimulationManager` on entering the tree and unregister on exit; `despawn()` removes a body cleanly. No gravity/movement simulation yet — `velocity` is carried as state for the Phase 7 gravity tick.
+- `SimulationManager` (`scripts/simulation/simulation_manager.gd`): central registry of all living `CelestialBody` instances (typed arrays; `get_bodies()`, `get_bodies_of_type()`, `body_count()`). Systems query the manager instead of hard-wiring node paths — Phase 7 gravity will iterate these bodies. Deliberately registration/listing only.
+
+### Changed
+- `Planet` now extends `CelestialBody`: mass/radius/rotation state and the spawn/despawn lifecycle come from the base class, and the planet registers with the `SimulationManager` automatically (visible in the boot log). Preset `mass` flows into the body. No public API changed — camera, aim, firing and overlay consume the same surface as before.
+- `Main.tscn`: added the `Simulation` manager node.
+- PlanetData's `rotation_speed` stays **data only** for now (the base class already supports per-body `angular_velocity`); wiring preset rotation into actual spin arrives with the Phase 7 simulation so aim behaviour is not changed mid-phase.
+
 ## [0.1.0] — Phase 5: Data-Driven Planets
 
 ### Added

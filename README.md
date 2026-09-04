@@ -24,7 +24,8 @@ A small, AI-assisted Godot planetary sandbox prototype.
 - **Phase 4 (Planet Damage System)** — done: persistent damage map + crater shader (darkened craters, ember rim, crack wrinkle displacement), `ImpactData` resource, planet damage stages (Healthy → Damaged → Cracked → Critical), and a live damage readout in the overlay.
 - **Interaction revision** — two aim modes: **CROSSHAIR (default)** with a screen-centre crosshair (WASD/arrows orbit the camera to aim) and **TARGETING (T)** restoring click-to-target; Space fires in both, projectiles always impact at the **first surface intersection** (no tunneling), pooled sound banks so rapid shots/impacts overlap.
 - **Phase 5 (Data-Driven Planets)** — done: `PlanetData`/`PlanetVisualSettings` resources, five live-switchable presets (Terra, Luna, Vulcanis, Glacia, Titanus) on **keys 1–5**, preset-driven size/visuals/camera limits, planet readout in the overlay.
-- Gravity, orbital simulation, real mesh destruction: planned (Phase 6+).
+- **Phase 6 (Celestial Bodies)** — done: reusable `CelestialBody` base class (typed body types, mass/radius/velocity/rotation, spawn/despawn lifecycle) and a `SimulationManager` registry; the planet is now a `CelestialBody` with automatic registration — infrastructure for the Phase 7 gravity simulation.
+- Gravity, orbital simulation, real mesh destruction: planned (Phase 7+).
 
 ## Input / Controls
 
