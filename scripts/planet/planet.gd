@@ -29,6 +29,8 @@ func apply_data(preset : PlanetData) -> void:
 	data = preset
 	radius = maxf(0.05, preset.radius)
 	mass = preset.mass
+	# Phase 7: preset rotation is now live (base-class angular velocity).
+	angular_velocity = Vector3.UP * preset.rotation_speed
 	_apply_size()
 	var damage := get_node_or_null("DamageSystem")
 	if damage != null and preset.visual != null and damage.has_method("apply_visuals"):

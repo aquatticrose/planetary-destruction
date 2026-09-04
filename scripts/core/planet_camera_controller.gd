@@ -70,6 +70,9 @@ func _process(delta : float) -> void:
 
 
 func _update_camera() -> void:
+	# Phase 7: bodies move — keep orbiting the planet's CURRENT position.
+	if _planet != null:
+		target = _planet.global_position
 	distance = clampf(distance, _eff_min, _eff_max)
 	var cp := cos(pitch)
 	var offset := distance * Vector3(cp * sin(yaw), sin(pitch), cp * cos(yaw))
