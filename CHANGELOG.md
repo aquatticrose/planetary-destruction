@@ -14,6 +14,7 @@
 
 ### Changed
 - `project.godot`: added `preset_1..preset_5` inputs (number keys 1–5).
+- Zoom rebound from mouse wheel to **Q / E** (`camera_zoom_in/out`): holding the key zooms smoothly (exponential, `zoom_key_rate` tunable on the camera); clamped limits and preset-driven re-clamping unchanged.
 
 ## [0.0.5] — Phase 4: Planet Damage System
 

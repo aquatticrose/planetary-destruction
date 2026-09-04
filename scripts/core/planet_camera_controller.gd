@@ -1,8 +1,8 @@
 extends Camera3D
-## Orbit-around-the-planet camera controller..
-## Phase 1: smooth orbit(WASD/Arrow keys)and mouse-wheel zoom, with clamped
-## limitsthatkeep the camera from clipping the planet. The controller only reads the planet's
-## public radius;; camera logic stays separate from planet logic..
+## Orbit-around-the-planet camera controller.
+## Smooth orbit (WASD/Arrow keys) and Q/E zoom, with clamped limits that
+## keep the camera from clipping the planet. The controller only reads the
+## planet's public radius; camera logic stays separate from planet logic.
 
 @export var target : Vector3 = Vector3.ZERO
 @export var distance : float =	4.0
@@ -13,8 +13,10 @@ extends Camera3D
 @export var max_pitch_deg : float =	80.0
 @export var orbital_speed : float =	2.5
 @export var zoom_speed : float =	1.15
-## Optional node path to the planet root,, so the radius auto-derives from one source..
-## If unset, `planet_radius` above is used directly..
+## Q/E (held) zoom rate: exponential steps per second at full deflection.
+@export var zoom_key_rate : float =	2.0
+## Optional node path to the planet root, so the radius auto-derives from
+## one source. If unset, `planet_radius` above is used directly.
 @export var planet_path : NodePath
 
 var _planet : Node3D
@@ -60,20 +62,11 @@ func _process(delta : float) -> void:
 	yaw += horizontal * orbital_speed * delta
 	pitch += vertical * orbital_speed * delta
 	pitch = clampf(pitch, deg_to_rad(min_pitch_deg), deg_to_rad(max_pitch_deg))
+	# Q/E zoom: held keys zoom smoothly (exponential), limits clamp in _update_camera.
+	var zoom_dir := Input.get_axis("camera_zoom_out", "camera_zoom_in")
+	if absf(zoom_dir) > 0.0:
+		distance *= pow(zoom_speed, -zoom_dir * zoom_key_rate * delta)
 	_update_camera()
-
-
-func _input(event : InputEvent) -> void:
-	var mb := event as InputEventMouseButton
-	if mb != null and mb.pressed:
-		if mb.button_index == MOUSE_BUTTON_WHEEL_UP:
-			distance /= zoom_speed
-			_update_camera()
-			get_viewport().set_input_as_handled()
-		elif mb.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-			distance *= zoom_speed
-			_update_camera()
-			get_viewport().set_input_as_handled()
 
 
 func _update_camera() -> void:

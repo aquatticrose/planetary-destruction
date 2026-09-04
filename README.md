@@ -32,7 +32,7 @@ A small, AI-assisted Godot planetary sandbox prototype.
 | --- | --- |
 | `orbit_left/right/up/down` | Arrow keys (orbit) |
 | `aim_left/right/up/down` | WASD (aim marker in TARGETING mode; extra orbit in CROSSHAIR mode) |
-| `camera_zoom_in/out` | Mouse wheel |
+| `camera_zoom_in/out` | Q / E (hold to zoom smoothly) |
 | `fire` | Space |
 | `toggle_aim_mode` | T |
 | `preset_1..preset_5` | Number keys 1–5 (planet presets) |
