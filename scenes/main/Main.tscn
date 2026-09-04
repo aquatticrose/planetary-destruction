@@ -1,16 +1,20 @@
-[gd_scene load_steps=9 format=3 uid="uid://d4kw6p8r2n3"]
+[gd_scene load_steps=13 format=3 uid="uid://d4kw6p8r2n3"]
 
 [ext_resource type="Script" path="res://scripts/core/main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/core/planet_camera_controller.gd" id="2_camera"]
 [ext_resource type="Script" path="res://scripts/ui/overlay.gd" id="3_overlay"]
 [ext_resource type="PackedScene" path="res://scenes/planet/planet.tscn" id="4_planet"]
 [ext_resource type="Script" path="res://scripts/core/targeting.gd" id="5_targeting"]
+[ext_resource type="Script" path="res://scripts/core/interaction_coordinator.gd" id="6_coordinator"]
+[ext_resource type="Script" path="res://scripts/impacts/firing_controller.gd" id="7_firing"]
+[ext_resource type="PackedScene" path="res://scenes/celestial/projectile.tscn" id="8_projectile"]
+[ext_resource type="PackedScene" path="res://scenes/effects/impact_effect.tscn" id="9_impact"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_space"]
 sky_top_color = Color(0.02,0.02,0.04,1.0)
 sky_horizon_color = Color(0.04,0.04,0.07,1.0)
 ground_bottom_color = Color(0.02,0.02,0.04,1.0)
-ground_horizon_color         = Color(0.04,0.04,0.07,1.0)
+ground_horizon_color = Color(0.04,0.04,0.07,1.0)
 sun_angle_max = 30.0
 sun_curve = 0.05
 
@@ -21,7 +25,7 @@ sky_material = SubResource("ProceduralSkyMaterial_space")
 background_mode = 2
 sky = SubResource("Sky_space")
 ambient_light_source = 3
-tonemap_mode =  2
+tonemap_mode = 2
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1_main")
@@ -32,16 +36,30 @@ environment = SubResource("Environment_env1")
 [node name="Sun" type="DirectionalLight3D" parent="."]
 rotation = Vector3(-0.7,-0.5,0.0)
 light_color = Color(1.0,0.96,0.9,1.0)
-light_energy =  1.25
+light_energy = 1.25
 shadow_enabled = true
 
 [node name="Planet" parent="." instance=ExtResource("4_planet")]
+
+[node name="Interaction" type="Node3D" parent="."]
+script = ExtResource("6_coordinator")
 
 [node name="Selector" type="Node3D" parent="."]
 script = ExtResource("5_targeting")
 planet_path = NodePath("../Planet")
 camera_path = NodePath("../Camera")
 marker_path = NodePath("../Planet/TargetMarker")
+coordinator_path = NodePath("../Interaction")
+
+[node name="Firing" type="Node3D" parent="."]
+script = ExtResource("7_firing")
+camera_path = NodePath("../Camera")
+selector_path = NodePath("../Selector")
+planet_path = NodePath("../Planet")
+coordinator_path = NodePath("../Interaction")
+projectile_scene = ExtResource("8_projectile")
+impact_effect_scene = ExtResource("9_impact")
+launch_distance = 1.2
 
 [node name="Camera" type="Camera3D" parent="."]
 current = true
@@ -51,29 +69,36 @@ planet_path = NodePath("../Planet")
 [node name="UI" type="CanvasLayer" parent="."]
 
 [node name="Overlay" type="Control" parent="UI"]
-anchors_preset =  15
+anchors_preset = 15
 anchor_right = 1.0
-anchor_bottom =  1.0
-grow_horizontal =  2
-grow_vertical =  2
-mouse_filter =  2
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 script = ExtResource("3_overlay")
 camera_path = NodePath("../../Camera")
 planet_path = NodePath("../../Planet")
 selector_path = NodePath("../../Selector")
+coordinator_path = NodePath("../../Interaction")
 
 [node name="Panel" type="PanelContainer" parent="UI/Overlay"]
-offset_left =  12.0
-offset_top =  12.0
-offset_right = 360.0
-offset_bottom =  112.0
-mouse_filter =  2
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 400.0
+offset_bottom = 150.0
+mouse_filter = 2
 
 [node name="VBox" type="VBoxContainer" parent="UI/Overlay/Panel"]
 
 [node name="HintLabel" type="Label" parent="UI/Overlay/Panel/VBox"]
-text = "Orbit: WASD / Arrow keys    Select: Left click to place marker"
+text = "Orbit: WASD | Zoom: Wheel | Target: LMB | Fire: F then LMB | ESC: cancel"
+autowrap_mode = 2
 modulate = Color(0.85,0.85,0.85,1.0)
+
+[node name="ModeLabel" type="Label" parent="UI/Overlay/Panel/VBox"]
+unique_name_in_owner = true
+text = "Targeting mode"
+modulate = Color(0.7,0.9,1.0,1.0)
 
 [node name="InfoLabel" type="Label" parent="UI/Overlay/Panel/VBox"]
 unique_name_in_owner = true
