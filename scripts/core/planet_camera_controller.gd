@@ -37,7 +37,7 @@ func _ready() -> void:
 func _process(delta : float) -> void:
 	var horizontal := Input.get_axis("orbit_left", "orbit_right")
 	var vertical := Input.get_axis("orbit_down", "orbit_up")
-	yaw -= horizontal * orbital_speed * delta
+	yaw += horizontal * orbital_speed * delta
 	pitch += vertical * orbital_speed * delta
 	pitch = clampf(pitch, deg_to_rad(min_pitch_deg), deg_to_rad(max_pitch_deg))
 	_update_camera()
