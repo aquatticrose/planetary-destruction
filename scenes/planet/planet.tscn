@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3 uid="uid://pln3t000000000000000000001"]
+
+[ext_resource type="Script" path="res://scripts/planet/planet.gd" id="1_planet"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_planet1"]
+radius =  1.0
+height =  2.0
+radial_segments =  64
+rings =  48
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_planet1"]
+albedo_color = Color(0.45,0.42,0.35,1.0)
+roughness =  0.9
+
+[node name="Planet" type="Node3D"]
+script = ExtResource("1_planet")
+
+[node name="Surface" type="MeshInstance3D" parent="."]
+mesh = SubResource("SphereMesh_planet1")
+surface_material_override = SubResource("StandardMaterial3D_planet1")

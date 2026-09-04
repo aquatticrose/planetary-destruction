@@ -1,8 +1,8 @@
 extends Node3D
 ## Root script for the main scene..
-## Phase 0 (Godot Foundation): logs project startup..
-##The planet, camera,and controls belong to later phases
-##and are intentionally not created here yet..
+## Phase 0: logs project startup. Phase 1 wires up the planet, sun, orbit
+## camera and a basic UI overlay.each subsystem lives in its own script(full planet/,
+## core/, ui/)..
 
 const DebugLog := preload("res://scripts/debug/debug_log.gd")
 
