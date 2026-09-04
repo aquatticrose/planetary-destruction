@@ -22,16 +22,27 @@ var yaw : float =	0.0
 var pitch : float =	0.0
 
 
+## Effective zoom limits, re-derived from the planet radius every frame so
+## data-driven preset switching (Phase 5) re-clamps the camera instantly.
+var _eff_min : float = 2.2
+var _eff_max : float = 12.0
+
+
 func _ready() -> void:
 	if not planet_path.is_empty():
 		_planet = get_node_or_null(planet_path) as Node3D
-		if _planet != null:
-			planet_radius = float(_planet.get("radius"))
-	## Keep the zooming base level above the surface and sane upper bound..
-	min_distance = max(min_distance, planet_radius +	1.2)
-	max_distance = max(max_distance, min_distance +	0.5)
-	distance = clampf(distance, min_distance, max_distance)
+	_refresh_limits()
+	distance = clampf(distance, _eff_min, _eff_max)
 	_update_camera()
+
+
+## Keeps min distance above the (current) surface and max sane; radius follows
+## the active PlanetData preset.
+func _refresh_limits() -> void:
+	if _planet != null:
+		planet_radius = float(_planet.get("radius"))
+	_eff_min = maxf(min_distance, planet_radius + 1.2)
+	_eff_max = maxf(max_distance, _eff_min + 0.5)
 
 
 ## When true (CROSSHAIR aim mode), WASD also orbits the camera, so aiming and
@@ -40,6 +51,7 @@ func _ready() -> void:
 var wasd_enabled : bool = false
 
 func _process(delta : float) -> void:
+	_refresh_limits()
 	var horizontal := Input.get_axis("orbit_left", "orbit_right")
 	var vertical := Input.get_axis("orbit_down", "orbit_up")
 	if wasd_enabled:
@@ -65,7 +77,7 @@ func _input(event : InputEvent) -> void:
 
 
 func _update_camera() -> void:
-	distance = clampf(distance, min_distance, max_distance)
+	distance = clampf(distance, _eff_min, _eff_max)
 	var cp := cos(pitch)
 	var offset := distance * Vector3(cp * sin(yaw), sin(pitch), cp * cos(yaw))
 	global_position = target + offset

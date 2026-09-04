@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="PlanetData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://data/planet_data.gd" id="1_pd"]
+[ext_resource type="Script" path="res://data/planet_visual_settings.gd" id="2_vs"]
+
+[sub_resource type="Resource" id="Resource_visual"]
+script = ExtResource("2_vs")
+base_color = Color(0.24, 0.19, 0.16, 1)
+roughness = 0.95
+ember_color = Color(1.0, 0.3, 0.1, 1)
+ember_strength = 1.4
+wrinkle_strength = 0.55
+atmosphere_color = Color(0.9, 0.4, 0.2, 1)
+
+[resource]
+script = ExtResource("1_pd")
+display_name = "Vulcanis"
+radius = 0.9
+mass = 0.8
+gravity = 8.9
+rotation_speed = 0.02
+temperature = 740.0
+atmosphere_density = 0.3
+surface_type = "volcanic"
+composition = "basalt/iron"
+generation_seed = 3
+visual = SubResource("Resource_visual")

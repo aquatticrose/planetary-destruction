@@ -7,10 +7,14 @@ shader_type spatial;
 uniform sampler2D damage_tex : filter_linear_mipmap;
 uniform float damage_scale : hint_range(0.0, 8.0) = 1.0;
 uniform float wrinkle_strength : hint_range(0.0, 2.0) = 0.35;
+// Phase 5: data-driven surface look (defaults keep the Phase 4 warm-rock look).
+uniform vec3 base_color = vec3(0.82, 0.76, 0.66);
+uniform float roughness : hint_range(0.0, 1.0) = 1.0;
+uniform vec3 ember_color = vec3(0.9, 0.5, 0.2);
+uniform float ember_strength : hint_range(0.0, 4.0) = 0.55;
 
 void fragment() {
-	// Base colour: a warm rock.
-	vec3 base = vec3(0.82, 0.76, 0.66);
+	vec3 base = base_color;
 
 	// Darken toward the crater core, brighten a rim ring with an ember hint.
 	float factor = texture(damage_tex, UV).r;
@@ -21,10 +25,11 @@ void fragment() {
 
 	// Ember tint for fresh, heavily damaged craters.
 	float ember = smoothstep(0.60, 1.0, d);
-	albedo += vec3(0.6, 0.28, 0.10) * ember * 0.35;
+	albedo += ember_color * ember * 0.35;
 
 	ALBEDO = albedo;
-	EMISSION = vec3(0.9, 0.5, 0.2) * ember * 0.55;
+	ROUGHNESS = roughness;
+	EMISSION = ember_color * ember * ember_strength;
 
 	// Crack/wrinkle channel: brighten normal variation near craters for a broken look.
 	float w = texture(damage_tex, UV * 4.0).g;

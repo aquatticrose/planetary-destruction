@@ -25,6 +25,8 @@ const DEFAULT_DAMAGE_RADIUS : float = 0.12
 
 var _surface : MeshInstance3D
 var _map : DamageMap
+var _material : ShaderMaterial
+var _visual : Resource
 
 var damage_total : float = 0.0
 var stage : int = STAGE_HEALTHY
@@ -37,7 +39,7 @@ func _ready() -> void:
 		if impactor != null:
 			impactor.impact_applied.connect(_on_impact_applied)
 	_surface = get_node_or_null(surface_path) as MeshInstance3D
-	_reset_material()
+	_ensure_material()
 
 
 ## Receives ImpactData emitted by the firing controller and applies it to this planet.
@@ -61,7 +63,7 @@ func apply_damage(impact : Resource) -> float:
 	var uv := _local_to_uv(local_pos)
 	_map.add_damage(uv, radius, strength)
 	_map.texture_update()
-	_reset_material()
+	_ensure_material()
 	damage_total = _map.total_damage
 	_update_stage()
 	planet_damaged.emit(world_pos, damage_total)
@@ -78,14 +80,35 @@ func _local_to_uv(v : Vector3) -> Vector2:
 	return Vector2(u, 0.5 + (lat / PI) * DAMAGE_UV_SCALE)
 
 
-## Builds the shader material with a fresh damage texture and assigns it to the surface.
-func _reset_material() -> void:
+## Ensures the surface uses one cached crater material. Created once; later
+## calls only refresh the damage texture, so data-driven visual params (Phase 5)
+## survive impacts.
+func _ensure_material() -> void:
 	if _surface == null or _map == null:
 		return
-	var mat := ShaderMaterial.new()
-	mat.shader = load("res://shaders/planet_damage.gdshader") as Shader
-	mat.set_shader_parameter("damage_tex", _map.texture)
-	_surface.set_surface_override_material(0, mat)
+	if _material == null:
+		_material = ShaderMaterial.new()
+		_material.shader = load("res://shaders/planet_damage.gdshader") as Shader
+		_apply_visual_params()
+		_surface.set_surface_override_material(0, _material)
+	_material.set_shader_parameter("damage_tex", _map.texture)
+
+
+## Phase 5: applies PlanetVisualSettings (from PlanetData) to the crater material.
+func apply_visuals(visual : Resource) -> void:
+	_visual = visual
+	if _material != null:
+		_apply_visual_params()
+
+
+func _apply_visual_params() -> void:
+	if _material == null or _visual == null:
+		return
+	_material.set_shader_parameter("base_color", _visual.get("base_color"))
+	_material.set_shader_parameter("roughness", float(_visual.get("roughness")))
+	_material.set_shader_parameter("ember_color", _visual.get("ember_color"))
+	_material.set_shader_parameter("ember_strength", float(_visual.get("ember_strength")))
+	_material.set_shader_parameter("wrinkle_strength", float(_visual.get("wrinkle_strength")))
 
 
 func _update_stage() -> void:

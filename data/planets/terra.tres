@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="PlanetData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://data/planet_data.gd" id="1_pd"]
+[ext_resource type="Script" path="res://data/planet_visual_settings.gd" id="2_vs"]
+
+[sub_resource type="Resource" id="Resource_visual"]
+script = ExtResource("2_vs")
+base_color = Color(0.38, 0.52, 0.38, 1)
+roughness = 0.9
+ember_color = Color(0.9, 0.5, 0.2, 1)
+ember_strength = 0.55
+wrinkle_strength = 0.35
+atmosphere_color = Color(0.45, 0.65, 0.95, 1)
+
+[resource]
+script = ExtResource("1_pd")
+display_name = "Terra"
+radius = 1.0
+mass = 1.0
+gravity = 9.81
+rotation_speed = 0.05
+temperature = 288.0
+atmosphere_density = 1.0
+surface_type = "terrestrial"
+composition = "iron/silicate"
+generation_seed = 1
+visual = SubResource("Resource_visual")

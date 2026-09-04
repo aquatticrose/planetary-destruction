@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://d4kw6p8r2n3"]
+[gd_scene load_steps=26 format=3 uid="uid://d4kw6p8r2n3"]
 
 [ext_resource type="Script" path="res://scripts/core/main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/core/planet_camera_controller.gd" id="2_camera"]
@@ -16,6 +16,12 @@
 [ext_resource type="AudioStream" path="res://assets/audio/impact/heavy-impact.mp3" id="14_impact2"]
 [ext_resource type="AudioStream" path="res://assets/audio/impact/deep-heavy-impact.mp3" id="15_impact3"]
 [ext_resource type="Script" path="res://scripts/ui/crosshair_ui.gd" id="16_crossui"]
+[ext_resource type="Script" path="res://scripts/core/planet_selector.gd" id="17_selector"]
+[ext_resource type="Resource" path="res://data/planets/terra.tres" id="18_terra"]
+[ext_resource type="Resource" path="res://data/planets/luna.tres" id="19_luna"]
+[ext_resource type="Resource" path="res://data/planets/vulcanis.tres" id="20_vulcanis"]
+[ext_resource type="Resource" path="res://data/planets/glacia.tres" id="21_glacia"]
+[ext_resource type="Resource" path="res://data/planets/titanus.tres" id="22_titanus"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_space"]
 sky_top_color = Color(0.02,0.02,0.04,1.0)
@@ -78,6 +84,11 @@ streams = Array[AudioStream]([ExtResource("11_shoot1"), ExtResource("12_shoot2")
 script = ExtResource("10_soundbank")
 streams = Array[AudioStream]([ExtResource("13_impact1"), ExtResource("14_impact2"), ExtResource("15_impact3")])
 
+[node name="PlanetSelector" type="Node3D" parent="."]
+script = ExtResource("17_selector")
+planet_path = NodePath("../Planet")
+presets = Array[PlanetData]([ExtResource("18_terra"), ExtResource("19_luna"), ExtResource("20_vulcanis"), ExtResource("21_glacia"), ExtResource("22_titanus")])
+
 [node name="Camera" type="Camera3D" parent="."]
 current = true
 script = ExtResource("2_camera")
@@ -107,6 +118,7 @@ planet_path = NodePath("../../Planet")
 aim_path = NodePath("../../Aim")
 coordinator_path = NodePath("../../Interaction")
 damage_path = NodePath("../../Planet/DamageSystem")
+selector_path = NodePath("../../PlanetSelector")
 
 [node name="Panel" type="PanelContainer" parent="UI/Overlay"]
 offset_left = 12.0
@@ -141,3 +153,8 @@ modulate = Color(0.95,0.75,0.4,1.0)
 unique_name_in_owner = true
 text = "Damage: 0.00  Stage: Healthy"
 modulate = Color(1.0,0.6,0.5,1.0)
+
+[node name="PresetLabel" type="Label" parent="UI/Overlay/Panel/VBox"]
+unique_name_in_owner = true
+text = "Planet: -"
+modulate = Color(0.7,1.0,0.8,1.0)
