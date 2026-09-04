@@ -1,5 +1,20 @@
 # Changelog
 
+## [Unreleased] — Phase 7: Gravity
+
+### Added
+- `GravitySimulation` (`scripts/simulation/gravity_simulation.gd`): gameplay-friendly Newtonian gravity, not a scientific simulator. Pairwise attraction (`a = G·M/r²`, softened so tiny separations can't explode forces), semi-implicit Euler velocity→position integration, and a stable fixed timestep (Godot's 60 Hz physics tick, delta-clamped). `gravity_constant` (default 10) is tuned for scene-scale units and fully tunable.
+- **Collision checks:** overlapping bodies merge into the more massive one — momentum-conserving velocity, centre-of-mass position, volume-preserving radius growth. Planets rebuild their mesh/collider on absorb. Merging doubles as the stability mechanism (no r→0 force singularity).
+- Debug **gravity vectors:** `GravityDebug` (`scripts/simulation/gravity_debug_draw.gd`) draws each body's acceleration as an orange world-space line (ImmediateMesh, rebuilt per frame). Pure presentation — reads the simulation's computed accelerations.
+- Debug **force values:** with debug on, per-body acceleration, force (`F = m·a`) and speed are logged once per second.
+- **G** (`toggle_gravity_debug`) toggles debug vectors + force logging.
+- Demo content: `GravityDemo` spawns 3 small asteroids (code-generated visuals, `ASTEROID` type, auto-registered via the Phase 6 lifecycle) with mostly-radial + tangential velocities, so bodies visibly curve in and sometimes get absorbed. Delete the node to remove it. Deliberately NOT the Phase 8 orbit system.
+
+### Changed
+- Camera orbit target now tracks the planet's **live** position (bodies move).
+- Preset `rotation_speed` is now live: `Planet.apply_data()` feeds it into the base-class `angular_velocity` (Terra spins slowly). Aim marker, impacts and damage stay glued to the rotating surface — all consumers already work in planet-local space.
+- Registry stays consistent through organic merges (verified: a demo asteroid can absorb into the planet mid-session).
+
 ## [Unreleased] — Phase 6: Celestial Bodies
 
 ### Added
