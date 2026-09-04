@@ -1,10 +1,12 @@
 extends Node3D
 ## Phase 3 firing: in FIRING mode a left-click launches a fake projectile from the camera
 ## toward the currently-targeted surface point. On impact it records the world position and
-## spawns a temporary impact effect (crater + particle burst). No physics bodies used.
+## spawns a temporary impact effect (crater + particle burst). Also emits an ImpactData for
+## systems that own persistent damage (the planet's DamageSystem) without poking them directly.
 
-const DebugLog := preload("res://scripts/debug/debug_log.gd")
 const InteractionMode := preload("res://scripts/core/interaction_mode.gd")
+
+signal impact_applied(impact : Resource)
 
 @export var camera_path : NodePath
 @export var selector_path : NodePath
@@ -12,7 +14,6 @@ const InteractionMode := preload("res://scripts/core/interaction_mode.gd")
 @export var coordinator_path : NodePath
 @export var projectile_scene : PackedScene
 @export var impact_effect_scene : PackedScene
-@export var launch_distance : float = 1.2
 @export var sound_bank_path : NodePath
 
 var _camera : Camera3D
@@ -65,6 +66,12 @@ func _on_impact(at : Vector3) -> void:
 		_sound_bank.play("impact")
 	DebugLog.info("Impact recorded at %s (total %d)" % [at, _recorded_impacts.size()])
 	_spawn_impact_effect(at)
+	if _planet != null:
+		var impact := ImpactData.new()
+		impact.world_position = at
+		impact.local_position = _planet.world_to_local(at)
+		impact.surface_normal = (at - _planet.global_position).normalized()
+		impact_applied.emit(impact)
 
 
 func _spawn_impact_effect(at : Vector3) -> void:

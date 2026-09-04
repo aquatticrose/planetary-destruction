@@ -4,7 +4,6 @@ extends Node3D
 ## coordinates and a marker is glued to the surface. Selects only apply in TARGETING mode.
 ## Targeting only emits signals; the overlay listens. No simulation physics/gravity/destruction.
 
-const DebugLog := preload("res://scripts/debug/debug_log.gd")
 const InteractionMode := preload("res://scripts/core/interaction_mode.gd")
 
 signal target_selected(world_position : Vector3, local_position : Vector3, surface_normal : Vector3)
@@ -64,7 +63,7 @@ func _handle_select() -> void:
 		return
 	var world_position : Vector3 = result["position"]
 	var surface_normal : Vector3 = result["normal"]
-	var local_position : Vector3 = _planet.to_local(world_position)
+	var local_position : Vector3 = _planet.world_to_local(world_position)
 	_marker.global_position = world_position
 	_marker.visible = true
 	has_target = true

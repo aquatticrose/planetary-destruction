@@ -4,8 +4,5 @@ extends Node3D
 ## camera and a basic UI overlay.each subsystem lives in its own script(full planet/,
 ## core/, ui/)..
 
-const DebugLog := preload("res://scripts/debug/debug_log.gd")
-
-
 func _ready() -> void:
 	DebugLog.info("Main scene ready. Project booted successfully.")

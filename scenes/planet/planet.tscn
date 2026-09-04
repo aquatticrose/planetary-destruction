@@ -1,25 +1,26 @@
-[gd_scene format=3 uid="uid://c0swalpt5ge7i"]
+[gd_scene load_steps=7 format=3 uid="uid://c0swalpt5ge7i"]
 
 [ext_resource type="Script" path="res://scripts/planet/planet.gd" id="1_planet"]
+[ext_resource type="Script" path="res://scripts/planet/planet_damage.gd" id="2_damage"]
+[ext_resource type="Shader" path="res://shaders/planet_damage.gdshader" id="3_shader"]
 
 [sub_resource type="SphereMesh" id="SphereMesh_planet1"]
 radius = 1.0
-height =  2.0
-radial_segments =  64
-rings =  48
+height = 2.0
+radial_segments = 64
+rings = 48
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_planet1"]
-albedo_color = Color(0.45,0.42,0.35,1.0)
-roughness =  0.9
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_planet1"]
+shader = ExtResource("3_shader")
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_collider"]
-radius =  1.0
+radius = 1.0
 
 [sub_resource type="SphereMesh" id="SphereMesh_marker"]
-radius =  0.06
-height =  0.12
-radial_segments =  12
-rings =  6
+radius = 0.06
+height = 0.12
+radial_segments = 12
+rings = 6
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_marker"]
 albedo_color = Color(1.0,0.55,0.15,1.0)
@@ -32,7 +33,12 @@ script = ExtResource("1_planet")
 
 [node name="Surface" type="MeshInstance3D" parent="."]
 mesh = SubResource("SphereMesh_planet1")
-surface_material_override = SubResource("StandardMaterial3D_planet1")
+surface_material_override = SubResource("ShaderMaterial_planet1")
+
+[node name="DamageSystem" type="Node3D" parent="."]
+script = ExtResource("2_damage")
+impactor_path = NodePath("/root/Main/Firing")
+surface_path = NodePath("../Surface")
 
 [node name="Collider" type="StaticBody3D" parent="."]
 

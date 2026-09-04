@@ -60,7 +60,6 @@ planet_path = NodePath("../Planet")
 coordinator_path = NodePath("../Interaction")
 projectile_scene = ExtResource("8_projectile")
 impact_effect_scene = ExtResource("9_impact")
-launch_distance = 1.2
 sound_bank_path = NodePath("../SoundBank")
 
 [node name="SoundBank" type="Node" parent="."]
@@ -85,6 +84,7 @@ camera_path = NodePath("../../Camera")
 planet_path = NodePath("../../Planet")
 selector_path = NodePath("../../Selector")
 coordinator_path = NodePath("../../Interaction")
+damage_path = NodePath("../../Planet/DamageSystem")
 
 [node name="Panel" type="PanelContainer" parent="UI/Overlay"]
 offset_left = 12.0
@@ -114,3 +114,8 @@ modulate = Color(0.85,0.85,0.85,1.0)
 unique_name_in_owner = true
 text = "Target: none"
 modulate = Color(0.95,0.75,0.4,1.0)
+
+[node name="DamageLabel" type="Label" parent="UI/Overlay/Panel/VBox"]
+unique_name_in_owner = true
+text = "Damage: 0.00  Stage: Healthy"
+modulate = Color(1.0,0.6,0.5,1.0)
