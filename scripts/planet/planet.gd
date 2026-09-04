@@ -1,27 +1,34 @@
-extends Node3D
-## Reusable planet node.
-## Phase 5: data-driven. A PlanetData Resource (radius, physics stats, visual
-## settings, generation seed) defines the planet; apply_data() applies it to the
-## surface mesh, collider and damage-shader visuals. mass/gravity/rotation_speed
-## are carried as DATA ONLY — simulation (Phase 6+) will consume them later.
+extends CelestialBody
+## Reusable planet node (Phase 6: now a CelestialBody — mass/radius/rotation and
+## the spawn/despawn lifecycle come from the base class, and registration with
+## the SimulationManager is automatic).
+## Phase 5: data-driven. A PlanetData Resource defines the planet; apply_data()
+## applies it to the surface mesh, collider and damage-shader visuals, and feeds
+## mass into the body. gravity/rotation_speed remain DATA ONLY until the
+## Phase 7 gravity simulation.
 ## Appearance comes from the child Surface + DamageSystem.
 
-@export var radius: float = 1.0
 ## Active preset. Assign in the editor, or call apply_data() at runtime (keys 1-5).
 @export var data : Resource
 
 
+func _init() -> void:
+	body_type = BodyType.PLANET
+
+
 func _ready() -> void:
+	super() # base class: simulation manager registration
 	if data != null:
 		apply_data(data)
 
 
-## Phase 5: apply a PlanetData preset to this planet (size + visuals).
+## Phase 5: apply a PlanetData preset to this planet (size + mass + visuals).
 func apply_data(preset : PlanetData) -> void:
 	if preset == null:
 		return
 	data = preset
 	radius = maxf(0.05, preset.radius)
+	mass = preset.mass
 	_apply_size()
 	var damage := get_node_or_null("DamageSystem")
 	if damage != null and preset.visual != null and damage.has_method("apply_visuals"):
