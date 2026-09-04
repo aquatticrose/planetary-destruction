@@ -1,15 +1,20 @@
-[gd_scene load_steps=14 format=3 uid="uid://d4kw6p8r2n3"]
+[gd_scene load_steps=19 format=3 uid="uid://d4kw6p8r2n3"]
 
 [ext_resource type="Script" path="res://scripts/core/main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/core/planet_camera_controller.gd" id="2_camera"]
 [ext_resource type="Script" path="res://scripts/ui/overlay.gd" id="3_overlay"]
 [ext_resource type="PackedScene" path="res://scenes/planet/planet.tscn" id="4_planet"]
-[ext_resource type="Script" path="res://scripts/core/targeting.gd" id="5_targeting"]
+[ext_resource type="Script" path="res://scripts/core/aim_controller.gd" id="5_aim"]
 [ext_resource type="Script" path="res://scripts/core/interaction_coordinator.gd" id="6_coordinator"]
 [ext_resource type="Script" path="res://scripts/impacts/firing_controller.gd" id="7_firing"]
 [ext_resource type="PackedScene" path="res://scenes/celestial/projectile.tscn" id="8_projectile"]
 [ext_resource type="PackedScene" path="res://scenes/effects/impact_effect.tscn" id="9_impact"]
 [ext_resource type="Script" path="res://scripts/core/sound_bank.gd" id="10_soundbank"]
+[ext_resource type="AudioStream" path="res://assets/audio/shoot/shoot1.mp3" id="11_shoot1"]
+[ext_resource type="AudioStream" path="res://assets/audio/shoot/shoot2.mp3" id="12_shoot2"]
+[ext_resource type="AudioStream" path="res://assets/audio/impact/impact.mp3" id="13_impact1"]
+[ext_resource type="AudioStream" path="res://assets/audio/impact/heavy-impact.mp3" id="14_impact2"]
+[ext_resource type="AudioStream" path="res://assets/audio/impact/deep-heavy-impact.mp3" id="15_impact3"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_space"]
 sky_top_color = Color(0.02,0.02,0.04,1.0)
@@ -44,26 +49,31 @@ shadow_enabled = true
 
 [node name="Interaction" type="Node3D" parent="."]
 script = ExtResource("6_coordinator")
+aim_path = NodePath("../Aim")
 
-[node name="Selector" type="Node3D" parent="."]
-script = ExtResource("5_targeting")
+[node name="Aim" type="Node3D" parent="."]
+script = ExtResource("5_aim")
 planet_path = NodePath("../Planet")
 camera_path = NodePath("../Camera")
-marker_path = NodePath("../Planet/TargetMarker")
-coordinator_path = NodePath("../Interaction")
+crosshair_path = NodePath("../Planet/Crosshair")
 
 [node name="Firing" type="Node3D" parent="."]
 script = ExtResource("7_firing")
 camera_path = NodePath("../Camera")
-selector_path = NodePath("../Selector")
+aim_path = NodePath("../Aim")
 planet_path = NodePath("../Planet")
-coordinator_path = NodePath("../Interaction")
 projectile_scene = ExtResource("8_projectile")
 impact_effect_scene = ExtResource("9_impact")
-sound_bank_path = NodePath("../SoundBank")
+shoot_bank_path = NodePath("../ShootBank")
+impact_bank_path = NodePath("../ImpactBank")
 
-[node name="SoundBank" type="Node" parent="."]
+[node name="ShootBank" type="Node" parent="."]
 script = ExtResource("10_soundbank")
+streams = Array[AudioStream]([ExtResource("11_shoot1"), ExtResource("12_shoot2")])
+
+[node name="ImpactBank" type="Node" parent="."]
+script = ExtResource("10_soundbank")
+streams = Array[AudioStream]([ExtResource("13_impact1"), ExtResource("14_impact2"), ExtResource("15_impact3")])
 
 [node name="Camera" type="Camera3D" parent="."]
 current = true
@@ -82,7 +92,7 @@ mouse_filter = 2
 script = ExtResource("3_overlay")
 camera_path = NodePath("../../Camera")
 planet_path = NodePath("../../Planet")
-selector_path = NodePath("../../Selector")
+aim_path = NodePath("../../Aim")
 coordinator_path = NodePath("../../Interaction")
 damage_path = NodePath("../../Planet/DamageSystem")
 
@@ -96,13 +106,13 @@ mouse_filter = 2
 [node name="VBox" type="VBoxContainer" parent="UI/Overlay/Panel"]
 
 [node name="HintLabel" type="Label" parent="UI/Overlay/Panel/VBox"]
-text = "Orbit: WASD | Zoom: Wheel | Target: LMB | Fire: F then LMB | ESC: cancel"
+text = "Orbit: Arrows | Zoom: Wheel | Aim: WASD | Fire: Space | ESC: reset"
 autowrap_mode = 2
 modulate = Color(0.85,0.85,0.85,1.0)
 
 [node name="ModeLabel" type="Label" parent="UI/Overlay/Panel/VBox"]
 unique_name_in_owner = true
-text = "Targeting mode"
+text = "Mode: Targeting"
 modulate = Color(0.7,0.9,1.0,1.0)
 
 [node name="InfoLabel" type="Label" parent="UI/Overlay/Panel/VBox"]
@@ -112,7 +122,7 @@ modulate = Color(0.85,0.85,0.85,1.0)
 
 [node name="TargetLabel" type="Label" parent="UI/Overlay/Panel/VBox"]
 unique_name_in_owner = true
-text = "Target: none"
+text = "Aim local: -"
 modulate = Color(0.95,0.75,0.4,1.0)
 
 [node name="DamageLabel" type="Label" parent="UI/Overlay/Panel/VBox"]

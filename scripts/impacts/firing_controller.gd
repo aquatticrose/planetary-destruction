@@ -1,83 +1,98 @@
 extends Node3D
-## Phase 3 firing: in FIRING mode a left-click launches a fake projectile from the camera
-## toward the currently-targeted surface point. On impact it records the world position and
-## spawns a temporary impact effect (crater + particle burst). Also emits an ImpactData for
-## systems that own persistent damage (the planet's DamageSystem) without poking them directly.
+## Phase 3 revision: keyboard firing (Space) along the current aim direction.
+## Pipeline: AimController (crosshair) -> this node -> FIRST surface intersection
+## -> projectile flight -> ImpactData -> PlanetDamage.
+## Responsibilities stay separated: this node never moves the crosshair and
+## never edits damage state directly; it only emits ImpactData and spawns
+## presentation effects (impact VFX + one sound per event).
 
-const InteractionMode := preload("res://scripts/core/interaction_mode.gd")
-
-signal impact_applied(impact : Resource)
+signal impact_applied(impact : ImpactData)
 
 @export var camera_path : NodePath
-@export var selector_path : NodePath
 @export var planet_path : NodePath
-@export var coordinator_path : NodePath
+@export var aim_path : NodePath
 @export var projectile_scene : PackedScene
 @export var impact_effect_scene : PackedScene
-@export var sound_bank_path : NodePath
+@export var shoot_bank_path : NodePath
+@export var impact_bank_path : NodePath
+## How far in front of the camera the projectile becomes visible.
+@export var muzzle_offset : float = 0.6
+## Ray length used to find the first surface intersection.
+@export var max_shot_range : float = 100.0
 
 var _camera : Camera3D
-var _selector : Node
 var _planet : Node3D
-var _coordinator : Node
-var _sound_bank : Node
-var _recorded_impacts : Array[Vector3] = []
+var _aim : Node3D
+var _shoot_bank : Node
+var _impact_bank : Node
 
 
 func _ready() -> void:
 	_camera = get_node_or_null(camera_path) as Camera3D
-	_selector = get_node_or_null(selector_path)
-	_planet = get_node_or_null(planet_path) as Node3D
-	_coordinator = get_node_or_null(coordinator_path)
-	_sound_bank = get_node_or_null(sound_bank_path)
+	_planet = get_node_or_null(planet_path)
+	_aim = get_node_or_null(aim_path)
+	_shoot_bank = get_node_or_null(shoot_bank_path)
+	_impact_bank = get_node_or_null(impact_bank_path)
 
 
-func _input(event : InputEvent) -> void:
-	if event.is_action_pressed("select") and _in_firing_mode():
+func _unhandled_input(event : InputEvent) -> void:
+	if event.is_action_pressed("fire"):
 		_fire()
-		get_viewport().set_input_as_handled()
 
 
-func _in_firing_mode() -> bool:
-	return _coordinator != null and _coordinator.current_mode == InteractionMode.Mode.FIRING
-
-
+## Fires along the camera->crosshair direction. The impact happens at the FIRST
+## planet surface the shot path meets, so a projectile can never tunnel through
+## the planet to reach a target on the far side.
 func _fire() -> void:
-	if _camera == null or _selector == null or _planet == null or projectile_scene == null:
-		DebugLog.warn("Firing unavailable: missing references or projectile scene")
+	if _camera == null or _planet == null or _aim == null:
+		DebugLog.warn("Firing is not wired (camera/planet/aim missing)")
 		return
-	if not _selector.has_target:
-		DebugLog.warn("Firing needs a target - pick a surface point first")
+	var origin := _camera.global_position
+	var dir : Vector3 = (_aim.get_aim_world() - origin).normalized()
+	var hit := _first_surface_hit(origin, dir)
+	if hit.is_empty():
+		DebugLog.warn("Shot missed the planet (no surface intersection along aim)")
 		return
-	var from := _camera.global_position
-	var to : Vector3 = _selector.target_position
-	var proj := projectile_scene.instantiate()
-	get_tree().current_scene.add_child(proj)
-	proj.launch(from, to)
-	proj.impacted.connect(_on_impact)
-	if _sound_bank != null:
-		_sound_bank.play("shoot")
-	DebugLog.info("Fired projectile from %s toward %s" % [from, to])
+	_play(_shoot_bank)
+	var projectile := projectile_scene.instantiate() as Node3D
+	add_child(projectile)
+	projectile.launch(origin + dir * muzzle_offset, hit.position, hit.normal)
+	projectile.impacted.connect(_on_projectile_impacted)
 
 
-func _on_impact(at : Vector3) -> void:
-	_recorded_impacts.append(at)
-	if _sound_bank != null:
-		_sound_bank.play("impact")
-	DebugLog.info("Impact recorded at %s (total %d)" % [at, _recorded_impacts.size()])
-	_spawn_impact_effect(at)
-	if _planet != null:
-		var impact := ImpactData.new()
-		impact.world_position = at
-		impact.local_position = _planet.world_to_local(at)
-		impact.surface_normal = (at - _planet.global_position).normalized()
-		impact_applied.emit(impact)
+## Raycast from the camera along the shot direction against the planet collider.
+func _first_surface_hit(origin : Vector3, dir : Vector3) -> Dictionary:
+	var space := get_world_3d().direct_space_state
+	var query := PhysicsRayQueryParameters3D.create(origin, origin + dir * max_shot_range)
+	query.collide_with_areas = false
+	query.collide_with_bodies = true
+	return space.intersect_ray(query)
 
 
-func _spawn_impact_effect(at : Vector3) -> void:
+## The projectile reached the pre-computed surface point: record the impact.
+func _on_projectile_impacted(world_position : Vector3, world_normal : Vector3) -> void:
+	_play(_impact_bank)
+	_spawn_effect(world_position, world_normal)
+	var impact := ImpactData.new()
+	impact.world_position = world_position
+	impact.local_position = _planet.world_to_local(world_position)
+	impact.surface_normal = world_normal
+	impact.strength = 1.0
+	impact_applied.emit(impact)
+	DebugLog.info("Impact recorded at %s (local %s)" % [world_position, impact.local_position])
+
+
+func _spawn_effect(world_position : Vector3, world_normal : Vector3) -> void:
 	if impact_effect_scene == null:
 		return
-	var normal := (at - _planet.global_position).normalized()
-	var fx := impact_effect_scene.instantiate()
-	get_tree().current_scene.add_child(fx)
-	fx.setup(at, normal)
+	var fx := impact_effect_scene.instantiate() as Node3D
+	add_child(fx)
+	fx.global_position = world_position
+	if fx.has_method("play_impact"):
+		fx.play_impact(world_normal)
+
+
+## Exactly one sound per event, randomly selected by the bank.
+func _play(bank : Node) -> void:
+	if bank != null and bank.has_method("play_random"):
+		bank.play_random()

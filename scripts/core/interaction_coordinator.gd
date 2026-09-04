@@ -1,37 +1,38 @@
 extends Node3D
-## Minimal interaction coordinator: holds the current mode and routes the small set of
-## interaction intents (Target vs Fire). Orbit/zoom are unaffected and stay in the camera.
-## Deliberately NOT a full state machine - ESC resets to the default (TARGETING) mode.
+## Minimal interaction coordinator (Phase 3 revision).
+## Owns the current InteractionMode and the ESC reset. Per-click routing is gone:
+## aiming (WASD) and firing (Space) are always-on, keyboard-driven behaviours
+## owned by AimController and FiringController. The mode enum is kept small and
+## available so future modal interactions have a place to live.
 
 const InteractionMode := preload("res://scripts/core/interaction_mode.gd")
 
-signal mode_changed(mode : int)
+signal mode_changed(new_mode : int)
+
+## Aim controller to reset when the player presses ESC.
+@export var aim_path : NodePath
 
 var current_mode : int = InteractionMode.DEFAULT_MODE
 
 
+func _ready() -> void:
+	mode_changed.emit(current_mode)
+
+
+func _unhandled_input(event : InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel"):
+		reset_interaction()
+
+
+## ESC: cancel the current action, re-centre the aim and return to the default mode.
+func reset_interaction() -> void:
+	current_mode = InteractionMode.DEFAULT_MODE
+	var aim := get_node_or_null(aim_path)
+	if aim != null and aim.has_method("reset_aim"):
+		aim.reset_aim()
+	mode_changed.emit(current_mode)
+	DebugLog.info("Interaction reset (mode Targeting)")
+
+
 func get_mode() -> int:
 	return current_mode
-
-
-func set_mode(mode : int) -> void:
-	if current_mode == mode:
-		return
-	current_mode = mode
-	mode_changed.emit(mode)
-
-
-func _input(event : InputEvent) -> void:
-	if event.is_action_pressed("toggle_fire_mode"):
-		_toggle_fire_mode()
-		get_viewport().set_input_as_handled()
-	elif event.is_action_pressed("ui_cancel"):
-		set_mode(InteractionMode.DEFAULT_MODE)
-		get_viewport().set_input_as_handled()
-
-
-func _toggle_fire_mode() -> void:
-	if current_mode == InteractionMode.Mode.FIRING:
-		set_mode(InteractionMode.DEFAULT_MODE)
-	else:
-		set_mode(InteractionMode.Mode.FIRING)
