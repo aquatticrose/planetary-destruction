@@ -45,6 +45,7 @@ surface_path = NodePath("../Surface")
 [node name="Shape" type="CollisionShape3D" parent="Collider"]
 shape = SubResource("SphereShape3D_collider")
 
-[node name="Crosshair" type="MeshInstance3D" parent="."]
+[node name="TargetMarker" type="MeshInstance3D" parent="."]
+visible = false
 mesh = SubResource("SphereMesh_marker")
 surface_material_override = SubResource("StandardMaterial3D_marker")

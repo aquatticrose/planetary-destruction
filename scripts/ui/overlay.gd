@@ -9,7 +9,7 @@ extends Control
 @export var coordinator_path : NodePath
 @export var damage_path : NodePath
 
-const MODE_NAMES : Array[String] = ["Orbit", "Targeting", "Firing"]
+const MODE_NAMES : Array[String] = ["Crosshair", "Targeting"]
 const STAGE_NAMES : Array[String] = ["Healthy", "Damaged", "Cracked", "Critical"]
 
 @onready var _mode_label : Label = %ModeLabel

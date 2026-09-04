@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://d4kw6p8r2n3"]
+[gd_scene load_steps=20 format=3 uid="uid://d4kw6p8r2n3"]
 
 [ext_resource type="Script" path="res://scripts/core/main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/core/planet_camera_controller.gd" id="2_camera"]
@@ -15,6 +15,7 @@
 [ext_resource type="AudioStream" path="res://assets/audio/impact/impact.mp3" id="13_impact1"]
 [ext_resource type="AudioStream" path="res://assets/audio/impact/heavy-impact.mp3" id="14_impact2"]
 [ext_resource type="AudioStream" path="res://assets/audio/impact/deep-heavy-impact.mp3" id="15_impact3"]
+[ext_resource type="Script" path="res://scripts/ui/crosshair_ui.gd" id="16_crossui"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_space"]
 sky_top_color = Color(0.02,0.02,0.04,1.0)
@@ -50,12 +51,14 @@ shadow_enabled = true
 [node name="Interaction" type="Node3D" parent="."]
 script = ExtResource("6_coordinator")
 aim_path = NodePath("../Aim")
+camera_path = NodePath("../Camera")
+crosshair_ui_path = NodePath("../UI/Crosshair")
 
 [node name="Aim" type="Node3D" parent="."]
 script = ExtResource("5_aim")
 planet_path = NodePath("../Planet")
 camera_path = NodePath("../Camera")
-crosshair_path = NodePath("../Planet/Crosshair")
+crosshair_path = NodePath("../Planet/TargetMarker")
 
 [node name="Firing" type="Node3D" parent="."]
 script = ExtResource("7_firing")
@@ -82,6 +85,15 @@ planet_path = NodePath("../Planet")
 
 [node name="UI" type="CanvasLayer" parent="."]
 
+[node name="Crosshair" type="Control" parent="UI"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("16_crossui")
+
 [node name="Overlay" type="Control" parent="UI"]
 anchors_preset = 15
 anchor_right = 1.0
@@ -106,7 +118,7 @@ mouse_filter = 2
 [node name="VBox" type="VBoxContainer" parent="UI/Overlay/Panel"]
 
 [node name="HintLabel" type="Label" parent="UI/Overlay/Panel/VBox"]
-text = "Orbit: Arrows | Zoom: Wheel | Aim: WASD | Fire: Space | ESC: reset"
+text = "Orbit: Arrows/WASD | Zoom: Wheel | Aim: Crosshair (T = Targeting) | Fire: Space | ESC: reset"
 autowrap_mode = 2
 modulate = Color(0.85,0.85,0.85,1.0)
 

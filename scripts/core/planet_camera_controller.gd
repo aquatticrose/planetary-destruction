@@ -34,9 +34,17 @@ func _ready() -> void:
 	_update_camera()
 
 
+## When true (CROSSHAIR aim mode), WASD also orbits the camera, so aiming and
+## viewing are one action: the screen-centre crosshair always shows the aim.
+## Toggled by the interaction coordinator; arrows always orbit.
+var wasd_enabled : bool = false
+
 func _process(delta : float) -> void:
 	var horizontal := Input.get_axis("orbit_left", "orbit_right")
 	var vertical := Input.get_axis("orbit_down", "orbit_up")
+	if wasd_enabled:
+		horizontal += Input.get_axis("aim_left", "aim_right")
+		vertical += Input.get_axis("aim_up", "aim_down")
 	yaw += horizontal * orbital_speed * delta
 	pitch += vertical * orbital_speed * delta
 	pitch = clampf(pitch, deg_to_rad(min_pitch_deg), deg_to_rad(max_pitch_deg))
