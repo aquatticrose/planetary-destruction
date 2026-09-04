@@ -1,7 +1,7 @@
 extends Camera3D
 ## Orbit-around-the-planet camera controller..
 ## Phase 1: smooth orbit with WASD/Arrow keys and mouse-wheel zoom,, with clamped
-## limits that keep the camera from clippingthe planet.. The controller only reads the planet's
+## limits that keep the camera from clipping the planet.. The controller only reads the planet's
 ## public radius -- camera logic stays separate from planet logic..
 
 @export var target : Vector3 = Vector3.ZERO
@@ -13,7 +13,7 @@ extends Camera3D
 @export var max_pitch_deg : float =  80.0
 @export var orbital_speed : float =  2.5## rad/s
 @export var zoom_speed : float =  1.15## multiplier per wheel notch
-## Optional node path to the planet root so the radius auto-derivesfrom one source..
+## Optional node path to the planet root so the radius auto-derives from one source..
 ## If unset, planet_radius above is used directly..
 @export var planet_path : NodePath
 
