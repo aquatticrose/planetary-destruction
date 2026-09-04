@@ -2,40 +2,26 @@
 
 A small, AI-assisted Godot planetary sandbox prototype.
 
+## Engine & Target
 
-
-## Engine and Target
-
-- Godot **4.7.2** stable (pinned.)
-- Language: GDScript (typed where practical.)
-- Renderer: **Compatibility** (for reliable iteration on Intel/macOS.)
-- Target platform: **PC / macOS** first.
-
-
+- Godot **4.7.2** stable (pinned)
+- Language: GDScript (typed where practical)
+- Renderer: **Compatibility** (for reliable iteration on Intel/macOS)
+- Target platform: **PC / macOS** first
 
 ## Setup
 
-
-1. Install Godot 4.7.2 stable..
-2. Open this project folder (`/path/to/planetary-destruction`)in Godot..
+1. Install Godot 4.7.2 stable.
+2. Open this project folder (e.g. `/path/to/planetary-destruction`)in Godot.
 3. Open and run the main scene: `scenes/main/Main.tscn`.
-
-
 
 ## Current status
 
-Phase 0 (Godot Foundation) complete:
-- Godot project configured (Compatibility renderer, PC/macOS target.)
-- Project folder structure created: `scenes/`, `scripts/`, `assets/`, `shaders/`, `data/`, `tests/`, `docs/`.
-- Input actions configured (see below.)
-- `Main.tscn` with basic environment and lighting..
-- Basic debug logging via `DebugLog`.
+- **Phase 0 (Godot Foundation)** -- done: project configured, folder structure, input actions, `Main.tscn` with basic environment, debug logging.
+- **Phase 1 (The Planet)** -- done: sphere planet with material, sun lighting, space background, orbit camera with zoom and limits, basic UI overlay.
+- Targets, projectiles, gravity, destruction: planned for later phases (2+).
 
 ## Input actions
-
-These are wired in `project.godot` for future camera/orbit/zoom/targeting systems. They are not yet bound to gameplay logic,, which arrives in later phases..
-
-
 
 | Action | Binding(s) |
 | --- | --- |
@@ -45,7 +31,12 @@ These are wired in `project.godot` for future camera/orbit/zoom/targeting system
 | `orbit_down` | Down Arrow, S |
 | `camera_zoom_in` | Mouse wheel up |
 | `camera_zoom_out` | Mouse wheel down |
-| `select` | Left mouse button |
+| `select` | Left mouse button (used from Phase 2 onward) |
+
+## Controls
+
+- **Orbit** the camera around the planet: WASD or Arrow keys.
+- **Zoom** with the mouse wheel. Camera distance is auto-clamped (never clips the surface).
 
 ## Folder structure
 
@@ -61,4 +52,4 @@ docs/       technical documentation
 
 ## Roadmap
 
-See `docs/` andthe project roadmap document for the full development plan..
+See `docs/` and the project roadmap document for the full development plan.
