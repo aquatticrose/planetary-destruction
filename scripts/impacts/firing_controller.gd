@@ -13,11 +13,13 @@ const InteractionMode := preload("res://scripts/core/interaction_mode.gd")
 @export var projectile_scene : PackedScene
 @export var impact_effect_scene : PackedScene
 @export var launch_distance : float = 1.2
+@export var sound_bank_path : NodePath
 
 var _camera : Camera3D
 var _selector : Node
 var _planet : Node3D
 var _coordinator : Node
+var _sound_bank : Node
 var _recorded_impacts : Array[Vector3] = []
 
 
@@ -26,6 +28,7 @@ func _ready() -> void:
 	_selector = get_node_or_null(selector_path)
 	_planet = get_node_or_null(planet_path) as Node3D
 	_coordinator = get_node_or_null(coordinator_path)
+	_sound_bank = get_node_or_null(sound_bank_path)
 
 
 func _input(event : InputEvent) -> void:
@@ -51,11 +54,15 @@ func _fire() -> void:
 	get_tree().current_scene.add_child(proj)
 	proj.launch(from, to)
 	proj.impacted.connect(_on_impact)
+	if _sound_bank != null:
+		_sound_bank.play("shoot")
 	DebugLog.info("Fired projectile from %s toward %s" % [from, to])
 
 
 func _on_impact(at : Vector3) -> void:
 	_recorded_impacts.append(at)
+	if _sound_bank != null:
+		_sound_bank.play("impact")
 	DebugLog.info("Impact recorded at %s (total %d)" % [at, _recorded_impacts.size()])
 	_spawn_impact_effect(at)
 

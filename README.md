@@ -20,7 +20,7 @@ A small, AI-assisted Godot planetary sandbox prototype.
 - **Phase 0 (Godot Foundation)** — done: project config, folder structure, input actions, basic environment, debug logging.
 - **Phase 1 (The Planet)** — done: sphere planet, sun, space background, orbit camera with zoom/limits, basic UI overlay.
 - **Phase 2 (Targeting)** — done: click-to-target raycast, world/local coords, surface normal, glued target marker, coords/normal in debug UI.
-- **Phase 3 (First Destructive Interaction)** — done: minimal interaction modes (Orbit/Targeting/Firing), fake projectile, impact crater + particle burst, impact position recorded. Impact sound deferred (no audio asset yet).
+- **Phase 3 (First Destructive Interaction)** — done: minimal interaction modes (Orbit/Targeting/Firing), fake projectile, impact crater + particle burst, impact position recorded, and randomized shoot/impact sound banks.
 - Damage system, gravity, real destruction: planned (Phase 4+).
 
 ## Input / Modes

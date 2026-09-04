@@ -8,9 +8,7 @@
 - Firing controller (`scripts/impacts/firing_controller.gd`): in Firing mode, click launches a projectile from the camera at the targeted surface point; on impact it records the world position and spawns an impact effect.
 - Temporary impact effect (`scenes/effects/impact_effect.tscn`): a short-lived dark crater mark + one-shot particle burst that self-removes.
 - Overlay now shows the current interaction mode and an updated control hint.
-
-### Deferred
-- Impact sound: no audio asset is available yet; will be added when a sound bank exists.
+- Randomized sound banks (`scripts/core/sound_bank.gd`): a reusable `SoundBank` node plays exactly one randomly selected variation per event and avoids immediately repeating the same one. Firing plays a `shoot` sound (`assets/audio/shoot/shoot1.mp3` or `shoot2.mp3`); impact plays an `impact` sound (`assets/audio/impact/impact.mp3`, `heavy-impact.mp3`, or `deep-heavy-impact.mp3`). Future weapons can register their own banks via `register_bank()`.
 
 ## [0.0.3] — Phase 2: Targeting
 

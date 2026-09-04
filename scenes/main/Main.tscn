@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://d4kw6p8r2n3"]
+[gd_scene load_steps=14 format=3 uid="uid://d4kw6p8r2n3"]
 
 [ext_resource type="Script" path="res://scripts/core/main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/core/planet_camera_controller.gd" id="2_camera"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://scripts/impacts/firing_controller.gd" id="7_firing"]
 [ext_resource type="PackedScene" path="res://scenes/celestial/projectile.tscn" id="8_projectile"]
 [ext_resource type="PackedScene" path="res://scenes/effects/impact_effect.tscn" id="9_impact"]
+[ext_resource type="Script" path="res://scripts/core/sound_bank.gd" id="10_soundbank"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_space"]
 sky_top_color = Color(0.02,0.02,0.04,1.0)
@@ -60,6 +61,10 @@ coordinator_path = NodePath("../Interaction")
 projectile_scene = ExtResource("8_projectile")
 impact_effect_scene = ExtResource("9_impact")
 launch_distance = 1.2
+sound_bank_path = NodePath("../SoundBank")
+
+[node name="SoundBank" type="Node" parent="."]
+script = ExtResource("10_soundbank")
 
 [node name="Camera" type="Camera3D" parent="."]
 current = true
