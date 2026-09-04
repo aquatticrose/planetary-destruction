@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://pln3t000000000000000000001"]
+[gd_scene format=3 uid="uid://c0swalpt5ge7i"]
 
 [ext_resource type="Script" path="res://scripts/planet/planet.gd" id="1_planet"]
 
