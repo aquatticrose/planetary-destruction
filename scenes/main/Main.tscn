@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3 uid="uid://d4kw6p8r2n3"]
+[gd_scene load_steps=29 format=3 uid="uid://d4kw6p8r2n3"]
 
 [ext_resource type="Script" path="res://scripts/core/main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/core/planet_camera_controller.gd" id="2_camera"]
@@ -25,7 +25,6 @@
 [ext_resource type="Script" path="res://scripts/simulation/simulation_manager.gd" id="23_sim"]
 [ext_resource type="Script" path="res://scripts/simulation/gravity_simulation.gd" id="24_grav"]
 [ext_resource type="Script" path="res://scripts/simulation/gravity_debug_draw.gd" id="25_gdraw"]
-[ext_resource type="Script" path="res://scripts/simulation/gravity_demo_spawner.gd" id="26_gdemo"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_space"]
 sky_top_color = Color(0.02,0.02,0.04,1.0)
@@ -56,10 +55,6 @@ script = ExtResource("24_grav")
 [node name="GravityDebug" type="Node3D" parent="."]
 script = ExtResource("25_gdraw")
 gravity_sim_path = NodePath("../Gravity")
-
-[node name="GravityDemo" type="Node3D" parent="."]
-script = ExtResource("26_gdemo")
-planet_path = NodePath("../Planet")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_env1")
