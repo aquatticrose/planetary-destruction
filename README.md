@@ -26,7 +26,8 @@ A small, AI-assisted Godot planetary sandbox prototype.
 - **Phase 5 (Data-Driven Planets)** — done: `PlanetData`/`PlanetVisualSettings` resources, five live-switchable presets (Terra, Luna, Vulcanis, Glacia, Titanus) on **keys 1–5**, preset-driven size/visuals/camera limits, planet readout in the overlay.
 - **Phase 6 (Celestial Bodies)** — done: reusable `CelestialBody` base class (typed body types, mass/radius/velocity/rotation, spawn/despawn lifecycle) and a `SimulationManager` registry; the planet is now a `CelestialBody` with automatic registration — infrastructure for the gravity simulation.
 - **Phase 7 (Gravity)** — done: gameplay-friendly Newtonian gravity (pairwise attraction, velocity integration, fixed timestep), merging collision response, debug gravity vectors + force values on **G**, demo asteroids that fall/curve into the planet, camera tracks moving bodies, preset rotation now live.
-- Orbital simulation (parents/moons/orbits), real mesh destruction: planned (Phase 8+).
+- **Phase 8 (Orbits & Moons)** — done: orbits **emerge from real Newtonian gravity** — `CelestialBody.initialize_orbit()` converts orbital parameters (parent, radius, direction) into a physical position + the exact circular-orbit speed `v = √(G·M/r)`, then releases the body fully into the N-body sim. Velocity Verlet integration (upgraded from Euler) conserves orbital energy. Moon/star spawning (**M**/**B**), orbit trails (actual trajectory history), manual orbit editing (**+**/**-** radius, **R** reverse), live orbital diagnostics (distance, speed, bound/escaping, specific energy) in the overlay, and **C** clears everything.
+- Real mesh destruction: planned (Phase 10+).
 
 ## Input / Controls
 
@@ -38,6 +39,11 @@ A small, AI-assisted Godot planetary sandbox prototype.
 | `fire` | Space |
 | `toggle_aim_mode` | T |
 | `toggle_gravity_debug` | G (gravity vectors + force values) |
+| `spawn_moon` | M (spawn a moon in orbit around the planet) |
+| `spawn_star` | B (spawn a star; planet orbits it) |
+| `clear_orbits` | C (remove all spawned bodies) |
+| `orbit_radius_up/down` | + / − (nudge the selected body's orbit radius) |
+| `orbit_reverse` | R (reverse the selected body's orbital direction) |
 | `preset_1..preset_5` | Number keys 1–5 (planet presets) |
 | `cancel` (`ui_cancel`) | Esc |
 

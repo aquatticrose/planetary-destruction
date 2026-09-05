@@ -1,5 +1,23 @@
 # Changelog
 
+## [Unreleased] — Phase 8: Orbits & Moons
+
+### Added
+- **Orbit initialisation from physical parameters** (`CelestialBody.initialize_orbit()`): a body is placed at an orbital radius along a direction and given exactly the circular-orbit speed `v = √(G·M/r)` on top of its parent's velocity — then **released fully into the N-body simulation**. An orbit emerges from gravity; nothing holds the body on a predefined path.
+- **`OrbitSystem`** (`scripts/simulation/orbit_system.gd`): spawns moons (**M**) and stars (**B**), clears all spawned bodies (**C**), supports manual orbit editing — radius nudges (**+**/**−**) and direction reversal (**R**) convert the edit into a one-off physical position/velocity and then release the body back to gravity — and exposes orbital diagnostics via `get_diagnostics()`.
+- **`TrajectoryTrail`** (`scripts/simulation/trajectory_trail.gd`): a polyline trail showing the body's **actual** travelled path (trajectory history), not a fixed ellipse — the visualisation follows the true simulated motion.
+- **Orbital diagnostics in the overlay**: live distance, relative orbital speed, bound/escaping state (specific orbital energy), displayed for the selected body.
+- **Orbit test suite** (`tests/phase8_orbits_test.gd`): headless functional tests covering circular-orbit stability (30s + energy conservation), elliptical trajectories, escape, direction reversal, star-planet systems, manual editing, multi-body perturbation (n-body, not kinematic lock), time-dilation stability, and the full fire→impact→damage regression.
+
+### Changed
+- **Gravity integrator upgraded: semi-implicit Euler → Velocity Verlet** in `GravitySimulation`. Verlet is symplectic, so orbital energy stays conserved over long runs (measured drift ~0.0001 over 30s) instead of slowly leaking — this is the previous-phase fix that makes stable orbits physically possible without any orbit-preserving hack.
+- **Fixed-timestep accumulator** (120 Hz default, capped steps per frame): the simulation advances in deterministic fixed steps regardless of render frame rate, so runs are reproducible and a render hitch cannot inject a giant step.
+- **`CelestialBody`** gains `acceleration` (stored per body, shared by the integrator and diagnostics) and `parent` (the body it orbits — used only for initialisation and diagnostics, never for kinematic control).
+- Boot now spawns one **demo moon** by default so an orbit is visible immediately (`spawn_demo_moon` export to disable).
+
+### Documented
+- O(n²) gravity complexity re-flagged for the future fragment-heavy phases (no premature optimisation).
+
 ## [0.2.0] — Phases 6 & 7: Celestial Bodies + Gravity
 
 ### Phase 7 — Gravity
