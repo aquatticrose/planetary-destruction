@@ -1,6 +1,8 @@
 # Changelog
 
-## [Unreleased] — Phase 7: Gravity
+## [0.2.0] — Phases 6 & 7: Celestial Bodies + Gravity
+
+### Phase 7 — Gravity
 
 ### Added
 - `GravitySimulation` (`scripts/simulation/gravity_simulation.gd`): gameplay-friendly Newtonian gravity, not a scientific simulator. Pairwise attraction (`a = G·M/r²`, softened so tiny separations can't explode forces), semi-implicit Euler velocity→position integration, and a stable fixed timestep (Godot's 60 Hz physics tick, delta-clamped). `gravity_constant` (default 10) is tuned for scene-scale units and fully tunable.
@@ -15,7 +17,7 @@
 - Preset `rotation_speed` is now live: `Planet.apply_data()` feeds it into the base-class `angular_velocity` (Terra spins slowly). Aim marker, impacts and damage stay glued to the rotating surface — all consumers already work in planet-local space.
 - Registry stays consistent through organic merges (verified: a demo asteroid can absorb into the planet mid-session).
 
-## [Unreleased] — Phase 6: Celestial Bodies
+### Phase 6 — Celestial Bodies
 
 ### Added
 - `CelestialBody` base class (`scripts/celestial/celestial_body.gd`): the reusable identity for every celestial object — planets, moons, stars, asteroids and fragments. Owns a typed `BodyType` enum, `mass`, `radius`, `velocity` and `angular_velocity` (self-rotation, applied per frame), plus a spawn/despawn lifecycle: bodies auto-register with the `SimulationManager` on entering the tree and unregister on exit; `despawn()` removes a body cleanly. No gravity/movement simulation yet — `velocity` is carried as state for the Phase 7 gravity tick.
