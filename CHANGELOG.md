@@ -16,6 +16,7 @@
 - Camera orbit target now tracks the planet's **live** position (bodies move).
 - Preset `rotation_speed` is now live: `Planet.apply_data()` feeds it into the base-class `angular_velocity` (Terra spins slowly). Aim marker, impacts and damage stay glued to the rotating surface — all consumers already work in planet-local space.
 - Registry stays consistent through organic merges (verified: a demo asteroid can absorb into the planet mid-session).
+- Documented the gravity pairwise loop as O(n^2) with a scaling note for the Phase 10-11 fragment phase — no premature optimisation.
 
 ### Phase 6 — Celestial Bodies
 

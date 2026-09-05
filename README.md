@@ -43,6 +43,16 @@ A small, AI-assisted Godot planetary sandbox prototype.
 
 **CROSSHAIR mode (default):** a real crosshair is fixed at the screen centre; orbit the camera (WASD/arrows) so the crosshair covers the point you want to hit, then **Space** fires along the view direction. **TARGETING mode (T):** LMB places the target marker on the planet, WASD slides it (camera-relative), Space fires at it. **Esc** resets the aim and returns to CROSSHAIR.
 
+## Testing
+
+Headless regression tests live in `tests/` and boot the main scene to verify the scenarios that caught real regressions (interaction-mode routing, sound overlap, fire→first-surface→damage, body lifecycle, gravity, camera tracking):
+
+```bash
+Godot --headless --path <project> --script tests/run_tests.gd
+```
+
+Exit code 0 = all pass. Run it after any change to `scenes/main/` or the simulation scripts.
+
 ## Folder structure
 
 ```

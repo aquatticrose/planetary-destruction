@@ -7,6 +7,13 @@ extends Node
 ## simulation stable (no r -> 0 force singularity).
 ## Timestep stability: _physics_process runs on Godot's fixed physics tick
 ## (60 Hz); delta is additionally clamped so a hitch can never explode a step.
+##
+## SCALING NOTE: the pairwise loop below is O(n^2). That is intentional and
+## fine for the small body counts of Phases 7-8. When Phase 10-11 introduces
+## fragments/debris (potentially hundreds of bodies), this must be revisited —
+## e.g. spatial bucketing, a Barnes-Hut approximation, or culling negligible
+## masses — before it becomes a bottleneck. See the roadmap (Phase 11). Do NOT
+## optimise prematurely for the current scale.
 
 @export var enabled : bool = true
 ## Gameplay-scaled gravitational constant (mass in Earth masses, distance in
