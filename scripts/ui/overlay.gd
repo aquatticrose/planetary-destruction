@@ -10,6 +10,8 @@ extends Control
 @export var damage_path : NodePath
 ## Phase 5: preset selector, for the planet-name readout.
 @export var selector_path : NodePath
+## Phase 8: orbit system, for the orbital-diagnostics readout.
+@export var orbit_system_path : NodePath
 
 const MODE_NAMES : Array[String] = ["Crosshair", "Targeting"]
 const STAGE_NAMES : Array[String] = ["Healthy", "Damaged", "Cracked", "Critical"]
@@ -19,6 +21,7 @@ const STAGE_NAMES : Array[String] = ["Healthy", "Damaged", "Cracked", "Critical"
 @onready var _aim_label : Label = %TargetLabel
 @onready var _damage_label : Label = %DamageLabel
 @onready var _preset_label : Label = %PresetLabel
+@onready var _orbit_label : Label = %OrbitLabel
 
 var _camera : Camera3D
 var _planet : Node3D
@@ -26,6 +29,7 @@ var _aim : Node3D
 var _coordinator : Node
 var _damage : Node
 var _selector : Node
+var _orbit_system : Node
 
 
 func _ready() -> void:
@@ -35,6 +39,7 @@ func _ready() -> void:
 	_coordinator = get_node_or_null(coordinator_path)
 	_damage = get_node_or_null(damage_path)
 	_selector = get_node_or_null(selector_path)
+	_orbit_system = get_node_or_null(orbit_system_path)
 
 
 func _process(_delta : float) -> void:
@@ -57,6 +62,17 @@ func _process(_delta : float) -> void:
 		if idx >= 0 and idx < presets.size():
 			var pdata : Resource = presets[idx]
 			_preset_label.text = "Planet: %s (%d/%d)" % [pdata.get("display_name"), idx + 1, presets.size()]
+	if _orbit_system != null and _orbit_system.has_method("get_diagnostics"):
+		var selected = _orbit_system.get("selected_body")
+		var body = selected as CelestialBody
+		if body != null and body.parent != null:
+			var d : Dictionary = _orbit_system.get_diagnostics(body)
+			var bound_str : String = "bound" if d.get("bound", false) else "escaping"
+			_orbit_label.text = "Orbit: r=%.2f v=%.2f %s (E=%.2f)" % [
+					d.get("distance", 0.0), d.get("relative_speed", 0.0), bound_str, d.get("specific_energy", 0.0)]
+			_orbit_label.visible = true
+		else:
+			_orbit_label.visible = false
 
 
 func _mode_name(mode : int) -> String:

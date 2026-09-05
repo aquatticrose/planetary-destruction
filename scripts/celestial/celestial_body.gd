@@ -16,10 +16,17 @@ enum BodyType { PLANET, MOON, STAR, ASTEROID, FRAGMENT }
 ## Relative mass (Earth masses for planets; arbitrary units for small bodies).
 @export var mass : float = 1.0
 @export var radius : float = 1.0
-## World-space linear velocity. Data only until the Phase 7 gravity tick.
+## World-space linear velocity. Integrated by the Phase 7 gravity tick.
 @export var velocity : Vector3 = Vector3.ZERO
+## Acceleration from the most recent gravity step (carried for the Verlet
+## integrator and diagnostics). Updated by GravitySimulation.
+@export var acceleration : Vector3 = Vector3.ZERO
 ## Self-rotation in radians/second per local axis (applied every frame).
 @export var angular_velocity : Vector3 = Vector3.ZERO
+## The body this one orbits, if any (used for orbit initialisation and
+## diagnostics). The relationship is physical, not kinematic: after init the
+## body is released fully into the gravity simulation.
+@export var parent : CelestialBody = null
 
 var _manager : Node
 
@@ -49,6 +56,42 @@ func _register() -> void:
 ## happens in _exit_tree, so both this path and scene teardown are covered.
 func despawn() -> void:
 	queue_free()
+
+
+## Initialises this body in a circular orbit around `parent_body`. It is placed
+## at `radius` along `direction` (a unit vector from the parent) and given the
+## exact tangential speed for a circular orbit, v = sqrt(G * M / r), on top of
+## the parent's own velocity. After this, the body is released entirely into
+## the gravity simulation — nothing holds it on the orbit. `gravity_constant`
+## is the G used by the simulation (passed in so this stays decoupled from the
+## sim's configuration).
+func initialize_orbit(parent_body : CelestialBody, radius : float, direction : Vector3, gravity_constant : float) -> void:
+	parent = parent_body
+	if parent == null:
+		DebugLog.warn("initialize_orbit: null parent for '%s'" % name)
+		return
+	var dir_norm := direction.normalized()
+	global_position = parent.global_position + dir_norm * radius
+	# Tangent = a direction perpendicular to the radius. Prefer the global
+	# up-axis cross product; fall back to another axis if the orbit is polar.
+	var tangent := dir_norm.cross(Vector3.UP)
+	if tangent.length_squared() < 0.0001:
+		tangent = dir_norm.cross(Vector3.RIGHT)
+	tangent = tangent.normalized()
+	# Circular orbit speed for a negligible-mass body: v = sqrt(G * M / r).
+	var speed := sqrt(maxf(gravity_constant * parent.mass / radius, 0.0))
+	velocity = parent.velocity + tangent * speed
+	acceleration = Vector3.ZERO
+
+
+## Recomputes the circular-orbit state from new orbital parameters (used by
+## manual orbit editing). Converts an orbital radius/direction edit into a
+## one-off physical position + velocity, then returns the body to gravity.
+func reinitialize_orbit(radius : float, direction : Vector3, gravity_constant : float) -> void:
+	if parent == null:
+		DebugLog.warn("reinitialize_orbit: '%s' has no parent" % name)
+		return
+	initialize_orbit(parent, radius, direction, gravity_constant)
 
 
 func _exit_tree() -> void:
