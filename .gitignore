@@ -4,3 +4,7 @@
 export/
 *.log
 .DS_Store
+
+# Local debug tooling (not a project dependency)
+addons/
+*.zip
