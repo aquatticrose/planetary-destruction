@@ -7,14 +7,18 @@ extends Node3D
 
 signal planet_damaged(impact_position : Vector3, total_damage : float)
 signal damage_state_changed(stage : int)
+signal destruction_requested()
 
 ## Global damage at which the planet moves between damage states.
 const STAGE_HEALTHY : int = 0
 const STAGE_DAMAGED : int = 1
 const STAGE_CRACKED : int = 2
 const STAGE_CRITICAL : int = 3
+const STAGE_FRAGMENTING : int = 4
+const STAGE_DESTROYED : int = 5
 
 const STAGE_THRESHOLDS : Array[float] = [1.0, 4.0, 10.0, 20.0]
+const DESTRUCTION_THRESHOLD : float = 30.0
 
 const DAMAGE_UV_SCALE : float = 0.5
 const DEFAULT_DAMAGE_RADIUS : float = 0.12
@@ -30,6 +34,7 @@ var _visual : Resource
 
 var damage_total : float = 0.0
 var stage : int = STAGE_HEALTHY
+var _destruction_requested : bool = false
 
 
 func _ready() -> void:
@@ -66,6 +71,11 @@ func apply_damage(impact : Resource) -> float:
 	_ensure_material()
 	damage_total = _map.total_damage
 	_update_stage()
+	if damage_total >= DESTRUCTION_THRESHOLD and not _destruction_requested:
+		_destruction_requested = true
+		stage = STAGE_FRAGMENTING
+		damage_state_changed.emit(stage)
+		destruction_requested.emit()
 	planet_damaged.emit(world_pos, damage_total)
 	DebugLog.info("Planet damage now %.2f (stage %d)" % [damage_total, stage])
 	return damage_total
