@@ -58,6 +58,7 @@ func _apply_size() -> void:
 				shape = shape.duplicate()
 				shape_node.shape = shape
 			shape.radius = radius
+	ensure_physical_shape()
 
 
 ## Converts a planet-local position (origin at the planet centre) to world space.

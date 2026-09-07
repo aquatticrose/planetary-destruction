@@ -104,6 +104,8 @@ func _run() -> void:
 	for _i in 2:
 		await process_frame
 	_check(manager.body_count() == body_count_before + 1, "spawned body auto-registers")
+	_check(probe.get_node_or_null("Collider/Shape") is CollisionShape3D,
+			"every celestial body creates a queryable collision hitbox")
 	probe.despawn()
 	for _i in 2:
 		await process_frame

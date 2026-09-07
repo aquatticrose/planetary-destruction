@@ -32,6 +32,7 @@ var _manager : Node
 
 
 func _ready() -> void:
+	ensure_physical_shape()
 	# Deferred: the manager may be a sibling whose _ready has not run yet.
 	call_deferred("_register")
 
@@ -60,6 +61,27 @@ func despawn() -> void:
 	if _manager != null and is_instance_valid(_manager) and _manager.has_method("unregister_body"):
 		_manager.unregister_body(self)
 	queue_free()
+
+
+## Every celestial body has a queryable spherical hitbox. Gravity remains a
+## custom N-body solver (rather than Godot rigid bodies), but the StaticBody3D
+## makes bodies available to raycasts, targeting and future impact systems.
+func ensure_physical_shape() -> void:
+	var collider := get_node_or_null("Collider") as StaticBody3D
+	if collider == null:
+		collider = StaticBody3D.new()
+		collider.name = "Collider"
+		add_child(collider)
+	var shape_node := collider.get_node_or_null("Shape") as CollisionShape3D
+	if shape_node == null:
+		shape_node = CollisionShape3D.new()
+		shape_node.name = "Shape"
+		collider.add_child(shape_node)
+	var shape := shape_node.shape as SphereShape3D
+	if shape == null:
+		shape = SphereShape3D.new()
+		shape_node.shape = shape
+	shape.radius = maxf(radius, 0.001)
 
 
 ## Initialises this body in a circular orbit around `parent_body`. It is placed

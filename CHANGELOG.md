@@ -4,6 +4,7 @@
 
 ### Changed
 - **Inclined moon orbits:** the demo moon and moons spawned with **M** now start in a configurable 24° inclined orbital plane. Their depth is produced by the same gravitational initial conditions and N-body integration as every other orbit; the trajectory trail records that real three-dimensional path.
+- **Universal celestial collision shapes:** every `CelestialBody`, including moons, stars, asteroids and future fragments, now creates and maintains its own spherical `StaticBody3D` hitbox. Bodies remain governed by the project's deterministic N-body gravity solver while becoming queryable by raycasts and impact systems; merged bodies also resize their hitbox.
 
 ## [Unreleased] — Phase 9: Simulation Time
 

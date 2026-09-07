@@ -158,6 +158,8 @@ func _merge(big : CelestialBody, small : CelestialBody) -> void:
 	# Planets rebuild mesh/collider from radius; bare bodies just carry the value.
 	if big.has_method("_apply_size"):
 		big.call("_apply_size")
+	else:
+		big.ensure_physical_shape()
 	DebugLog.info("%s absorbed %s (mass %.3f, radius %.2f)" % [big.name, small.name, big.mass, big.radius])
 	small.despawn()
 
