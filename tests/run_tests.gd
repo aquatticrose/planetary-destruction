@@ -140,11 +140,14 @@ func _run() -> void:
 	var mass_before : float = planet.mass
 	var merger := _spawn_body(planet.global_position + Vector3(planet.radius + 0.02, 0, 0),
 			Vector3.ZERO, 0.002, 0.1)
+	var merger_mass : float = merger.mass
 	for _i in 4:
 		await physics_frame
 	_check(not is_instance_valid(merger) or merger.is_queued_for_deletion(),
 			"overlapping body merged (collision check)")
 	_check(planet.mass > mass_before, "planet absorbed the body's mass")
+	_check(absf(planet.mass - (mass_before + merger_mass)) < 0.0001,
+			"queued collision body is merged exactly once")
 
 	# --- Debug toggle harmless -------------------------------------------------
 	sim.debug_enabled = true

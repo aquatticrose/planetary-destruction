@@ -52,9 +52,13 @@ func _register() -> void:
 		DebugLog.warn("CelestialBody '%s' has no SimulationManager to register with" % name)
 
 
-## Lifecycle: remove this body from the simulation and free it. Unregistration
-## happens in _exit_tree, so both this path and scene teardown are covered.
+## Lifecycle: remove this body from the simulation and free it. Unregister
+## immediately rather than waiting for _exit_tree: queue_free() is deferred,
+## and a physics tick may otherwise integrate or merge this body again before
+## it leaves the scene tree. _exit_tree remains a safe fallback for teardown.
 func despawn() -> void:
+	if _manager != null and is_instance_valid(_manager) and _manager.has_method("unregister_body"):
+		_manager.unregister_body(self)
 	queue_free()
 
 

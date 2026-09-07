@@ -99,6 +99,15 @@ func clear_orbits() -> void:
 	_selected = null
 
 
+## The body currently controlled by the orbit-editing inputs and displayed by
+## the HUD. Keep the backing field private so callers cannot desynchronise it
+## from the spawned-body lifecycle.
+func get_selected_body() -> CelestialBody:
+	if _selected != null and is_instance_valid(_selected) and not _selected.is_queued_for_deletion():
+		return _selected
+	return null
+
+
 ## Manual orbit editing: converts a radius change into a one-off physical state
 ## (new position + circular-orbit velocity), then returns the body to gravity.
 func _edit_radius(delta : float) -> void:

@@ -37,6 +37,7 @@ func _run() -> void:
 	var moon := orbit_system.spawn_moon(planet, 3.0, Vector3.RIGHT, 0.01, 0.12)
 	for _i in 4:
 		await physics_frame
+	_check(orbit_system.get_selected_body() == moon, "new moon is selected for orbit editing and diagnostics")
 	var diags := orbit_system.get_diagnostics(moon)
 	_check(diags.get("bound", false), "moon is in a bound orbit (negative specific energy)")
 	_check(float(diags.get("relative_speed", 0.0)) > 0.0, "moon has orbital speed from gravity")
@@ -200,9 +201,9 @@ func _run() -> void:
 	for _i in 2:
 		await process_frame
 	_main.get_node("Firing")._fire()
+	var dm := _main.get_node("Planet/DamageSystem")
 	for _i in 60:
 		await process_frame
-	var dm := _main.get_node("Planet/DamageSystem")
 	_check(dm.damage_total > 0.001, "firing still applies damage (total=%.2f)" % dm.damage_total)
 
 	if _failures.is_empty():

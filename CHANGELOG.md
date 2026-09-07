@@ -2,6 +2,13 @@
 
 ## [Unreleased] — Phase 8: Orbits & Moons
 
+### Fixed
+- **Collision lifecycle correctness:** `CelestialBody.despawn()` now unregisters a body from `SimulationManager` immediately before calling deferred deletion. A body that has merged can no longer participate in one extra gravity tick and be absorbed a second time. The general headless regression suite now verifies the receiving body's mass increases by exactly the absorbed mass.
+- **Live orbit HUD wiring:** the overlay now obtains its selected body through the typed `OrbitSystem.get_selected_body()` API instead of attempting to read a non-existent dynamic property. The orbit distance, relative speed, bound/escaping state and energy readout now follow the body selected by spawning or editing.
+
+### Changed
+- **Phase 8 test coverage:** orbit tests assert that a freshly spawned moon becomes the selected diagnostic/edit target.
+
 ### Added
 - **Orbit initialisation from physical parameters** (`CelestialBody.initialize_orbit()`): a body is placed at an orbital radius along a direction and given exactly the circular-orbit speed `v = √(G·M/r)` on top of its parent's velocity — then **released fully into the N-body simulation**. An orbit emerges from gravity; nothing holds the body on a predefined path.
 - **`OrbitSystem`** (`scripts/simulation/orbit_system.gd`): spawns moons (**M**) and stars (**B**), clears all spawned bodies (**C**), supports manual orbit editing — radius nudges (**+**/**−**) and direction reversal (**R**) convert the edit into a one-off physical position/velocity and then release the body back to gravity — and exposes orbital diagnostics via `get_diagnostics()`.
