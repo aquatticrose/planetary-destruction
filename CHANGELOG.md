@@ -2,6 +2,9 @@
 
 ## [Unreleased] — Phase 8: Orbits & Moons
 
+### Changed
+- **Inclined moon orbits:** the demo moon and moons spawned with **M** now start in a configurable 24° inclined orbital plane. Their depth is produced by the same gravitational initial conditions and N-body integration as every other orbit; the trajectory trail records that real three-dimensional path.
+
 ## [Unreleased] — Phase 9: Simulation Time
 
 ### Added

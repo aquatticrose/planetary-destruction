@@ -11,6 +11,10 @@ extends Node3D
 @export var gravity_path : NodePath
 ## Spawns one demo moon on ready so there is an orbit to see immediately.
 @export var spawn_demo_moon : bool = true
+## Angle of the demo and player-spawned moons' orbital plane relative to the
+## planet's equatorial plane. This changes the physical initial conditions,
+## not merely the trail's rendering.
+@export_range(-80.0, 80.0, 1.0) var default_moon_inclination_degrees : float = 24.0
 
 var _planet : CelestialBody
 var _gravity : GravitySimulation
@@ -25,7 +29,7 @@ func _ready() -> void:
 		DebugLog.warn("OrbitSystem: planet or gravity path not wired")
 		return
 	if spawn_demo_moon:
-		spawn_moon(_planet, 2.5, Vector3.RIGHT)
+		spawn_moon(_planet, 2.5, _default_moon_direction())
 
 
 func _unhandled_input(event : InputEvent) -> void:
@@ -33,7 +37,7 @@ func _unhandled_input(event : InputEvent) -> void:
 		return
 	if event.is_action_pressed("spawn_moon"):
 		if _planet != null:
-			spawn_moon(_planet, 2.0 + _spawned.size() * 0.8, Vector3.RIGHT)
+			spawn_moon(_planet, 2.0 + _spawned.size() * 0.8, _default_moon_direction())
 	elif event.is_action_pressed("spawn_star"):
 		spawn_star_and_orbit(6.0, Vector3.RIGHT)
 	elif event.is_action_pressed("clear_orbits"):
@@ -106,6 +110,13 @@ func get_selected_body() -> CelestialBody:
 	if _selected != null and is_instance_valid(_selected) and not _selected.is_queued_for_deletion():
 		return _selected
 	return null
+
+
+## A tilted radial vector gives the moon a genuinely inclined orbital plane.
+## CelestialBody.initialize_orbit() derives a perpendicular tangential velocity,
+## then the N-body integrator preserves that plane under central gravity.
+func _default_moon_direction() -> Vector3:
+	return Vector3.RIGHT.rotated(Vector3.FORWARD, deg_to_rad(default_moon_inclination_degrees))
 
 
 ## Manual orbit editing: converts a radius change into a one-off physical state
