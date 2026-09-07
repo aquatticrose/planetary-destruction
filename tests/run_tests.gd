@@ -106,7 +106,9 @@ func _run() -> void:
 	_check(manager.body_count() == body_count_before + 1, "spawned body auto-registers")
 	_check(probe.get_node_or_null("Collider/Shape") is CollisionShape3D,
 			"every celestial body creates a queryable collision hitbox")
-	probe.despawn()
+	probe.max_lifetime = 0.01
+	probe.advance_lifetime(0.02)
+	_check(probe.is_queued_for_deletion(), "finite-lifetime fragments clean up in simulation time")
 	for _i in 2:
 		await process_frame
 	_check(manager.body_count() == body_count_before, "despawn unregisters the body")

@@ -23,12 +23,16 @@ enum BodyType { PLANET, MOON, STAR, ASTEROID, FRAGMENT }
 @export var acceleration : Vector3 = Vector3.ZERO
 ## Self-rotation in radians/second per local axis (applied every frame).
 @export var angular_velocity : Vector3 = Vector3.ZERO
+## Zero means persistent. Fragments use a bounded simulation-time lifetime so
+## debris cannot accumulate indefinitely in the O(n²) gravity solver.
+@export var max_lifetime : float = 0.0
 ## The body this one orbits, if any (used for orbit initialisation and
 ## diagnostics). The relationship is physical, not kinematic: after init the
 ## body is released fully into the gravity simulation.
 @export var parent : CelestialBody = null
 
 var _manager : Node
+var age : float = 0.0
 
 
 func _ready() -> void:
@@ -61,6 +65,16 @@ func despawn() -> void:
 	if _manager != null and is_instance_valid(_manager) and _manager.has_method("unregister_body"):
 		_manager.unregister_body(self)
 	queue_free()
+
+
+## Called by the fixed-step simulation, never presentation time. A paused
+## simulation therefore also pauses debris cleanup.
+func advance_lifetime(simulation_delta: float) -> void:
+	if max_lifetime <= 0.0:
+		return
+	age += simulation_delta
+	if age >= max_lifetime:
+		despawn()
 
 
 ## Every celestial body has a queryable spherical hitbox. Gravity remains a

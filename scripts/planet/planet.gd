@@ -108,6 +108,7 @@ func _spawn_fragment(container: Node, direction: Vector3, fragment_mass: float, 
 	fragment.body_type = CelestialBody.BodyType.FRAGMENT
 	fragment.mass = fragment_mass
 	fragment.radius = fragment_radius
+	fragment.max_lifetime = 120.0
 	fragment.global_position = global_position + direction * (radius * 0.82)
 	fragment.velocity = velocity + direction * destruction_impulse
 	fragment.angular_velocity = direction.cross(Vector3.UP) * 3.0

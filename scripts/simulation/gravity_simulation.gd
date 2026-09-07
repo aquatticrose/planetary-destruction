@@ -96,6 +96,9 @@ func _step(dt : float) -> void:
 	# 4) Collision checks: merge overlaps (also removes force singularities).
 	if merge_on_collision:
 		_resolve_collisions(bodies)
+	for body in bodies:
+		if is_instance_valid(body) and not body.is_queued_for_deletion():
+			body.advance_lifetime(dt)
 	# 5) Debug values.
 	if debug_enabled:
 		_debug_tick(dt)
