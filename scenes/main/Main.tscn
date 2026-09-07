@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://d4kw6p8r2n3"]
+[gd_scene load_steps=32 format=3 uid="uid://d4kw6p8r2n3"]
 
 [ext_resource type="Script" path="res://scripts/core/main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/core/planet_camera_controller.gd" id="2_camera"]
@@ -27,6 +27,7 @@
 [ext_resource type="Script" path="res://scripts/simulation/gravity_debug_draw.gd" id="25_gdraw"]
 [ext_resource type="Script" path="res://scripts/simulation/orbit_system.gd" id="26_orbit"]
 [ext_resource type="Script" path="res://scripts/simulation/trajectory_trail.gd" id="27_trail"]
+[ext_resource type="Script" path="res://scripts/simulation/simulation_clock.gd" id="28_clock"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_space"]
 sky_top_color = Color(0.02,0.02,0.04,1.0)
@@ -51,8 +52,12 @@ script = ExtResource("1_main")
 [node name="Simulation" type="Node" parent="."]
 script = ExtResource("23_sim")
 
+[node name="SimulationClock" type="Node" parent="."]
+script = ExtResource("28_clock")
+
 [node name="Gravity" type="Node" parent="."]
 script = ExtResource("24_grav")
+simulation_clock_path = NodePath("../SimulationClock")
 
 [node name="GravityDebug" type="Node3D" parent="."]
 script = ExtResource("25_gdraw")
@@ -140,6 +145,7 @@ coordinator_path = NodePath("../../Interaction")
 damage_path = NodePath("../../Planet/DamageSystem")
 selector_path = NodePath("../../PlanetSelector")
 orbit_system_path = NodePath("../../OrbitSystem")
+simulation_clock_path = NodePath("../../SimulationClock")
 
 [node name="Panel" type="PanelContainer" parent="UI/Overlay"]
 offset_left = 12.0
@@ -184,3 +190,8 @@ modulate = Color(0.7,1.0,0.8,1.0)
 unique_name_in_owner = true
 text = "Orbit: -"
 modulate = Color(0.6,0.9,1.0,1.0)
+
+[node name="SimulationLabel" type="Label" parent="UI/Overlay/Panel/VBox"]
+unique_name_in_owner = true
+text = "Simulation: 1x"
+modulate = Color(0.75,0.85,1.0,1.0)

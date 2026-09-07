@@ -12,6 +12,7 @@ extends Control
 @export var selector_path : NodePath
 ## Phase 8: orbit system, for the orbital-diagnostics readout.
 @export var orbit_system_path : NodePath
+@export var simulation_clock_path : NodePath
 
 const MODE_NAMES : Array[String] = ["Crosshair", "Targeting"]
 const STAGE_NAMES : Array[String] = ["Healthy", "Damaged", "Cracked", "Critical"]
@@ -22,6 +23,7 @@ const STAGE_NAMES : Array[String] = ["Healthy", "Damaged", "Cracked", "Critical"
 @onready var _damage_label : Label = %DamageLabel
 @onready var _preset_label : Label = %PresetLabel
 @onready var _orbit_label : Label = %OrbitLabel
+@onready var _simulation_label : Label = %SimulationLabel
 
 var _camera : Camera3D
 var _planet : Node3D
@@ -30,6 +32,7 @@ var _coordinator : Node
 var _damage : Node
 var _selector : Node
 var _orbit_system : OrbitSystem
+var _simulation_clock : Node
 
 
 func _ready() -> void:
@@ -40,6 +43,7 @@ func _ready() -> void:
 	_damage = get_node_or_null(damage_path)
 	_selector = get_node_or_null(selector_path)
 	_orbit_system = get_node_or_null(orbit_system_path) as OrbitSystem
+	_simulation_clock = get_node_or_null(simulation_clock_path)
 
 
 func _process(_delta : float) -> void:
@@ -72,6 +76,9 @@ func _process(_delta : float) -> void:
 			_orbit_label.visible = true
 		else:
 			_orbit_label.visible = false
+	if _simulation_clock != null:
+		var state := "PAUSED" if _simulation_clock.paused else "%sx" % str(_simulation_clock.get_speed_multiplier())
+		_simulation_label.text = "Simulation: %s  t=%.2fs  [P] pause  [,/.] speed" % [state, _simulation_clock.elapsed_simulation_time]
 
 
 func _mode_name(mode : int) -> String:

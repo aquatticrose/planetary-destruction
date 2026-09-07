@@ -2,6 +2,15 @@
 
 ## [Unreleased] — Phase 8: Orbits & Moons
 
+## [Unreleased] — Phase 9: Simulation Time
+
+### Added
+- **SimulationClock:** a dedicated, real-time-independent simulation clock with pause (**P**) and bounded speed controls (**,** / **.**): 0.25×, 0.5×, 1×, 2×, 5× and 10×. Gravity advances only in completed fixed steps, so displayed simulation time matches integrated physics time.
+- **Simulation HUD:** live pause/speed state and elapsed simulated time. Camera, aiming, UI and effects continue in real time while the N-body solver is paused or sped up.
+
+### Changed
+- **Safe high-speed simulation:** the gravity step budget is raised to 32 fixed steps per rendered physics frame, enough for the 10× mode at 120 Hz without silently dropping normal-frame simulation time.
+
 ### Fixed
 - **Collision lifecycle correctness:** `CelestialBody.despawn()` now unregisters a body from `SimulationManager` immediately before calling deferred deletion. A body that has merged can no longer participate in one extra gravity tick and be absorbed a second time. The general headless regression suite now verifies the receiving body's mass increases by exactly the absorbed mass.
 - **Live orbit HUD wiring:** the overlay now obtains its selected body through the typed `OrbitSystem.get_selected_body()` API instead of attempting to read a non-existent dynamic property. The orbit distance, relative speed, bound/escaping state and energy readout now follow the body selected by spawning or editing.

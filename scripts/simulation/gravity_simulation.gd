@@ -18,6 +18,7 @@ extends Node
 ## it becomes a bottleneck. Do NOT optimise prematurely for the current scale.
 
 @export var enabled : bool = true
+@export var simulation_clock_path : NodePath
 ## Gameplay-scaled gravitational constant (mass in Earth masses, distance in
 ## scene units). Tuned so test bodies fall visibly fast at radius ~3-6.
 @export var gravity_constant : float = 10.0
@@ -29,7 +30,7 @@ extends Node
 ## at this constant rate regardless of render frame rate for deterministic orbits.
 @export var fixed_timestep : float = 1.0 / 120.0
 ## Max simulation steps processed per render frame (spiral-of-death guard).
-@export var max_steps_per_frame : int = 8
+@export var max_steps_per_frame : int = 32
 ## Merge overlapping bodies into the more massive one.
 @export var merge_on_collision : bool = true
 ## Debug: draw gravity vectors + log force values (toggled with G in game).
@@ -37,11 +38,14 @@ extends Node
 @export var debug_log_interval : float = 1.0
 
 var _manager : Node
+var _clock : Node
 var _accumulator : float = 0.0
 var _log_timer : float = 0.0
 
 
 func _physics_process(delta : float) -> void:
+	if _clock == null:
+		_clock = get_node_or_null(simulation_clock_path)
 	if _manager == null:
 		_manager = get_tree().get_first_node_in_group(SimulationManager.GROUP_NAME)
 		if _manager == null:
@@ -50,11 +54,13 @@ func _physics_process(delta : float) -> void:
 		return
 	# Accumulate render delta and advance the simulation in fixed steps so the
 	# result is deterministic and independent of frame rate.
-	_accumulator += delta
+	_accumulator += _clock.scaled_delta(delta) if _clock != null else delta
 	var steps := 0
 	while _accumulator >= fixed_timestep and steps < max_steps_per_frame:
 		_step(fixed_timestep)
 		_accumulator -= fixed_timestep
+		if _clock != null:
+			_clock.advance(fixed_timestep)
 		steps += 1
 	# Drop excess backlog to avoid a spiral of death after a long stall.
 	if _accumulator > fixed_timestep * max_steps_per_frame:
